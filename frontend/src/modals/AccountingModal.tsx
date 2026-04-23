@@ -1,7 +1,11 @@
 import { useState } from "react";
 import "./AccountingModal.css";
 import accounts from "../data/accounts";
-import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
+import {
+  formatAmount,
+  formatAmountOnBlur,
+  parseAmount,
+} from "../utils/formatAmount";
 
 interface JournalItem {
   account: string;
@@ -24,6 +28,17 @@ function AccountingModal({
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [items, setItems] = useState<JournalItem[]>(initialItems);
+
+  const totalDebit = items.reduce(
+    (sum, item) => sum + parseAmount(item.debit),
+    0,
+  );
+  const totalCredit = items.reduce(
+    (sum, item) => sum + parseAmount(item.credit),
+    0,
+  );
+  const isBalanced =
+    Math.abs(totalDebit - totalCredit) < 0.01 && totalDebit > 0;
 
   return (
     <div className="modal-overlay">
@@ -109,9 +124,28 @@ function AccountingModal({
               </tr>
             ))}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colSpan={2}>
+                <strong>Summa</strong>
+              </td>
+              <td>
+                <strong>
+                  {formatAmountOnBlur(String(totalDebit).replace(".", ","))}
+                </strong>
+              </td>
+              <td>
+                <strong>
+                  {formatAmountOnBlur(String(totalCredit).replace(".", ","))}
+                </strong>
+              </td>
+            </tr>
+          </tfoot>
         </table>
 
         <button onClick={onClose}>Stäng</button>
+
+        {isBalanced && <button>Bokför</button>}
       </div>
     </div>
   );
