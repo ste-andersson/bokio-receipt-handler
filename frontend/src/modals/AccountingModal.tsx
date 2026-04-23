@@ -11,11 +11,13 @@ interface JournalItem {
   account: string;
   debit: string;
   credit: string;
+  placeholder?: boolean;
 }
 
 const initialItems: JournalItem[] = [
   { account: "2890", debit: "", credit: "" },
   { account: "5460", debit: "", credit: "" },
+  { account: "", debit: "", credit: "", placeholder: true },
 ];
 
 function AccountingModal({
@@ -39,6 +41,20 @@ function AccountingModal({
   );
   const isBalanced =
     Math.abs(totalDebit - totalCredit) < 0.01 && totalDebit > 0;
+
+  const activateRow = (index: number) => {
+    const updated = [...items];
+    updated[index].placeholder = false;
+    updated.push({ account: "", debit: "", credit: "", placeholder: true });
+    setItems(updated);
+  };
+
+  const handleRowBlur = (index: number) => {
+    const item = items[index];
+    if (!item.placeholder && !item.account && !item.debit && !item.credit) {
+      setItems(items.filter((_, i) => i !== index));
+    }
+  };
 
   return (
     <div className="modal-overlay">
@@ -73,12 +89,18 @@ function AccountingModal({
           </thead>
           <tbody>
             {items.map((item, index) => (
-              <tr key={index}>
+              <tr
+                key={index}
+                className={item.placeholder ? "placeholder-row" : ""}
+                onClick={() => item.placeholder && activateRow(index)}
+                onBlur={() => handleRowBlur(index)}
+              >
                 <td>
                   <input
                     type="text"
                     maxLength={4}
                     value={item.account}
+                    onFocus={() => item.placeholder && activateRow(index)}
                     onChange={(e) => {
                       const updated = [...items];
                       updated[index].account = e.target.value;
@@ -91,6 +113,7 @@ function AccountingModal({
                   <input
                     type="text"
                     value={item.debit}
+                    onFocus={() => item.placeholder && activateRow(index)}
                     onChange={(e) => {
                       const updated = [...items];
                       updated[index].debit = formatAmount(e.target.value);
@@ -107,6 +130,7 @@ function AccountingModal({
                   <input
                     type="text"
                     value={item.credit}
+                    onFocus={() => item.placeholder && activateRow(index)}
                     onChange={(e) => {
                       const updated = [...items];
                       updated[index].credit = formatAmount(e.target.value);

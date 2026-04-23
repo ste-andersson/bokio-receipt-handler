@@ -68,3 +68,8 @@ td input {
   font-size: 0.9rem;
   padding: 0.2rem;
 }
+
+tr.placeholder-row {
+  opacity: 0.4;
+  cursor: pointer;
+}
