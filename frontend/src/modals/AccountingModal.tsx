@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./AccountingModal.css";
 import accounts from "../data/accounts";
+import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
 
 interface JournalItem {
   account: string;
@@ -77,7 +78,12 @@ function AccountingModal({
                     value={item.debit}
                     onChange={(e) => {
                       const updated = [...items];
-                      updated[index].debit = e.target.value;
+                      updated[index].debit = formatAmount(e.target.value);
+                      setItems(updated);
+                    }}
+                    onBlur={(e) => {
+                      const updated = [...items];
+                      updated[index].debit = formatAmountOnBlur(e.target.value);
                       setItems(updated);
                     }}
                   />
@@ -88,7 +94,14 @@ function AccountingModal({
                     value={item.credit}
                     onChange={(e) => {
                       const updated = [...items];
-                      updated[index].credit = e.target.value;
+                      updated[index].credit = formatAmount(e.target.value);
+                      setItems(updated);
+                    }}
+                    onBlur={(e) => {
+                      const updated = [...items];
+                      updated[index].credit = formatAmountOnBlur(
+                        e.target.value,
+                      );
                       setItems(updated);
                     }}
                   />
