@@ -23,8 +23,8 @@ function App() {
 
   return (
     <>
-      <h1>Welcome to the Receipt Handler!</h1>
-      <p>This is a simple receipt handler application.</p>
+      <h1>Välkommen till kvittohanteraren</h1>
+      <p>Du är inloggad som:.</p>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
         {users.map((user) => (
