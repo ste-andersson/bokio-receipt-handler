@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./AccountingModal.css";
+import accounts from "../data/accounts";
 
 interface JournalItem {
   account: string;
@@ -69,7 +70,7 @@ function AccountingModal({
                     }}
                   />
                 </td>
-                <td>—</td>
+                <td>{accounts[item.account] ?? "—"}</td>
                 <td>
                   <input
                     type="text"
