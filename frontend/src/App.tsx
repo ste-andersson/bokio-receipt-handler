@@ -11,7 +11,7 @@ function App() {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    fetch("/api/users")
+    fetch(`${import.meta.env.VITE_API_URL ?? ""}/api/users`)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to fetch users: ${res.status}`);
         return res.json();
