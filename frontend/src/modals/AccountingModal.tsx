@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./AccountingModal.css";
 import accounts from "../data/accounts";
 import {
@@ -6,6 +6,8 @@ import {
   formatAmountOnBlur,
   parseAmount,
 } from "../utils/formatAmount";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface JournalItem {
   account: string;
@@ -30,6 +32,15 @@ function AccountingModal({
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [items, setItems] = useState<JournalItem[]>(initialItems);
+  const [companyId, setCompanyId] = useState("");
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/users/settings`)
+      .then((res) => res.json())
+      .then((data) => setCompanyId(data.companyId ?? ""));
+  }, []);
+
+  const activeItems = items.filter((item) => !item.placeholder);
 
   const totalDebit = items.reduce(
     (sum, item) => sum + parseAmount(item.debit),
@@ -54,6 +65,40 @@ function AccountingModal({
     if (!item.placeholder && !item.account && !item.debit && !item.credit) {
       setItems(items.filter((_, i) => i !== index));
     }
+  };
+
+  const handleSubmit = async () => {
+    const token = localStorage.getItem("bokioToken") ?? "";
+    const formData = new FormData();
+    formData.append(
+      "data",
+      new Blob(
+        [
+          JSON.stringify({
+            title,
+            date,
+            items: activeItems.map((item) => ({
+              account: parseInt(item.account),
+              debit: parseAmount(item.debit),
+              credit: parseAmount(item.credit),
+            })),
+          }),
+        ],
+        { type: "application/json" },
+      ),
+    );
+    formData.append("image", image);
+
+    await fetch(`${API_URL}/accounting/submit-receipt`, {
+      method: "POST",
+      headers: {
+        "X-Bokio-Token": token,
+        "X-Bokio-Company-Id": companyId,
+      },
+      body: formData,
+    });
+
+    onClose();
   };
 
   return (
@@ -169,7 +214,7 @@ function AccountingModal({
 
         <button onClick={onClose}>Stäng</button>
 
-        {isBalanced && <button>Bokför</button>}
+        {isBalanced && <button onClick={handleSubmit}>Bokför</button>}
       </div>
     </div>
   );

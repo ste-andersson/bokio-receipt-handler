@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import se.sveki.receipthandler.model.request.AccountingRequest;
 import se.sveki.receipthandler.service.AccountingService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/accounting")
 public class AccountingController {
