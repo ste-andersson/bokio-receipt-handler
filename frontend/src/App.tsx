@@ -9,20 +9,23 @@ interface User {
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL ?? ""}/api/users`)
       .then((res) => {
-        if (!res.ok) throw new Error(`Failed to fetch users: ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then((data: User[]) => setUsers(data));
+      .then((data: User[]) => setUsers(data))
+      .catch((err: Error) => setError(err.message));
   }, []);
 
   return (
     <>
       <h1>Welcome to the Receipt Handler!</h1>
       <p>This is a simple receipt handler application.</p>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <ul>
         {users.map((user) => (
           <li key={user.email}>{user.email}</li>
