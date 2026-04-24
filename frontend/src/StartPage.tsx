@@ -9,6 +9,7 @@ function StartPage() {
 
   return (
     <div>
+      <h1>Receipt Handler</h1>
       <CameraButton onImageCapture={setImage} />
       <button onClick={() => setSettingsOpen(true)}>Inställningar</button>
 

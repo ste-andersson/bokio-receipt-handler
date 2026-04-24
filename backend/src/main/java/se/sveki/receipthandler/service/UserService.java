@@ -33,4 +33,9 @@ public class UserService {
         user.setCustomPrompt(request.getCustomPrompt());
         repository.save(user);
     }
+
+    public UserEntity syncUser(String clerkUserId, String email) {
+        return repository.findByClerkUserId(clerkUserId)
+                .orElseGet(() -> repository.save(new UserEntity(clerkUserId, email)));
+    }
 }

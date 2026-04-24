@@ -1,39 +1,40 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import { useUser, Show, SignInButton, UserButton } from "@clerk/react";
+import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-interface User {
-  email: string;
-  companyId: string | null;
-  customPrompt: string | null;
-}
+import StartPage from "./StartPage";
+import "./App.css";
 
 function App() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL ?? ""}/api/users`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data: User[]) => setUsers(data))
-      .catch((err: Error) => setError(err.message));
-  }, []);
+    if (!user) return;
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clerkUserId: user.id,
+        email: user.primaryEmailAddress?.emailAddress,
+      }),
+    });
+  }, [user]);
 
   return (
     <>
+      <header>
+        <Show when="signed-in">
+          Signed in as: <UserButton />
+        </Show>
+      </header>
       <ToastContainer />
-      <h1>Välkommen till kvittohanteraren</h1>
-      <p>Du är inloggad som:.</p>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <ul>
-        {users.map((user) => (
-          <li key={user.email}>{user.email}</li>
-        ))}
-      </ul>
+      <Show when="signed-out">
+        <SignInButton />
+      </Show>
+      <Show when="signed-in">
+        <StartPage />
+      </Show>
     </>
   );
 }
