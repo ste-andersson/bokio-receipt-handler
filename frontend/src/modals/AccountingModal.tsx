@@ -67,38 +67,45 @@ function AccountingModal({
     }
   };
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async () => {
-    const token = localStorage.getItem("bokioToken") ?? "";
-    const formData = new FormData();
-    formData.append(
-      "data",
-      new Blob(
-        [
-          JSON.stringify({
-            title,
-            date,
-            items: activeItems.map((item) => ({
-              account: parseInt(item.account),
-              debit: parseAmount(item.debit),
-              credit: parseAmount(item.credit),
-            })),
-          }),
-        ],
-        { type: "application/json" },
-      ),
-    );
-    formData.append("image", image);
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("bokioToken") ?? "";
+      const formData = new FormData();
+      formData.append(
+        "data",
+        new Blob(
+          [
+            JSON.stringify({
+              title,
+              date,
+              items: activeItems.map((item) => ({
+                account: parseInt(item.account),
+                debit: parseAmount(item.debit),
+                credit: parseAmount(item.credit),
+              })),
+            }),
+          ],
+          { type: "application/json" },
+        ),
+      );
+      formData.append("image", image);
 
-    await fetch(`${API_URL}/accounting/submit-receipt`, {
-      method: "POST",
-      headers: {
-        "X-Bokio-Token": token,
-        "X-Bokio-Company-Id": companyId,
-      },
-      body: formData,
-    });
+      await fetch(`${API_URL}/accounting/submit-receipt`, {
+        method: "POST",
+        headers: {
+          "X-Bokio-Token": token,
+          "X-Bokio-Company-Id": companyId,
+        },
+        body: formData,
+      });
 
-    onClose();
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -214,7 +221,11 @@ function AccountingModal({
 
         <button onClick={onClose}>Stäng</button>
 
-        {isBalanced && <button onClick={handleSubmit}>Bokför</button>}
+        {isBalanced && (
+          <button onClick={handleSubmit} disabled={loading}>
+            {loading ? "Bokför..." : "Bokför"}
+          </button>
+        )}
       </div>
     </div>
   );
