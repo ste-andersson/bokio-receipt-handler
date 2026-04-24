@@ -7,6 +7,7 @@ import {
   parseAmount,
 } from "../utils/formatAmount";
 import { toast } from "react-toastify";
+import { compressImage } from "../utils/compressImage";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -96,7 +97,8 @@ function AccountingModal({
           { type: "application/json" },
         ),
       );
-      formData.append("image", image);
+      const compressed = await compressImage(image);
+      formData.append("image", compressed, "receipt.jpg");
 
       const response = await fetch(`${API_URL}/accounting/submit-receipt`, {
         method: "POST",
