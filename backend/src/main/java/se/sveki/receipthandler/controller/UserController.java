@@ -27,15 +27,16 @@ public class UserController {
     }
 
     @GetMapping("/settings")
-    public ResponseEntity<UserEntity> getSettings() {
-        UUID hardcodedUserId = UUID.fromString("7c2354bd-4e8a-444d-afba-c0ea547f5a85");
-        return ResponseEntity.ok(service.getSettings(hardcodedUserId));
+    public ResponseEntity<UserEntity> getSettings(
+            @RequestHeader("X-Clerk-User-Id") String clerkUserId) {
+        return ResponseEntity.ok(service.getSettings(clerkUserId));
     }
 
     @PutMapping("/settings")
-    public ResponseEntity<Void> updateSettings(@RequestBody UserSettingsRequest request) {
-        UUID hardcodedUserId = UUID.fromString("7c2354bd-4e8a-444d-afba-c0ea547f5a85");
-        service.updateSettings(hardcodedUserId, request);
+    public ResponseEntity<Void> updateSettings(
+            @RequestHeader ("X-Clerk-User-Id") String clerkUserId,
+            @RequestBody UserSettingsRequest request) {
+        service.updateSettings(clerkUserId, request);
         return ResponseEntity.ok().build();
     }
 

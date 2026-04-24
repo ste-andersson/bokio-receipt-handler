@@ -21,13 +21,13 @@ public class UserService {
         return repository.findAll();
     }
 
-    public UserEntity getSettings(UUID userId) {
-        return repository.findById(userId)
+    public UserEntity getSettings(String clerkUserId) {
+        return repository.findByClerkUserId(clerkUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public void updateSettings(UUID userId, UserSettingsRequest request) {
-        UserEntity user = repository.findById(userId)
+    public void updateSettings(String clerkUserId, UserSettingsRequest request) {
+        UserEntity user = repository.findByClerkUserId(clerkUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setCompanyId(request.getCompanyId());
         user.setCustomPrompt(request.getCustomPrompt());

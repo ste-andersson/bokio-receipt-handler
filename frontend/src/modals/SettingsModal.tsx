@@ -2,26 +2,38 @@ import { useEffect, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function SettingsModal({ onClose }: { onClose: () => void }) {
+function SettingsModal({
+  onClose,
+  clerkUserId,
+}: {
+  onClose: () => void;
+  clerkUserId: string;
+}) {
   const [companyId, setCompanyId] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
   const [token, setToken] = useState(localStorage.getItem("bokioToken") ?? "");
 
   useEffect(() => {
-    fetch(`${API_URL}/api/users/settings`)
+    console.log("clerkUserId:", clerkUserId);
+    fetch(`${API_URL}/api/users/settings`, {
+      headers: { "X-Clerk-User-Id": clerkUserId },
+    })
       .then((res) => res.json())
       .then((data) => {
         setCompanyId(data.companyId ?? "");
         setCustomPrompt(data.customPrompt ?? "");
       });
-  }, []);
+  }, [clerkUserId]);
 
   const handleSave = async () => {
     localStorage.setItem("bokioToken", token);
 
     await fetch(`${API_URL}/api/users/settings`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Clerk-User-Id": clerkUserId,
+      },
       body: JSON.stringify({ companyId, customPrompt }),
     });
 

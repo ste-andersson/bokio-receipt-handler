@@ -26,9 +26,11 @@ const initialItems: JournalItem[] = [
 function AccountingModal({
   image,
   onClose,
+  clerkUserId,
 }: {
   image: File;
   onClose: () => void;
+  clerkUserId: string;
 }) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -36,10 +38,12 @@ function AccountingModal({
   const [companyId, setCompanyId] = useState("");
 
   useEffect(() => {
-    fetch(`${API_URL}/api/users/settings`)
+    fetch(`${API_URL}/api/users/settings`, {
+      headers: { "X-Clerk-User_Id": clerkUserId },
+    })
       .then((res) => res.json())
       .then((data) => setCompanyId(data.companyId ?? ""));
-  }, []);
+  }, [clerkUserId]);
 
   const activeItems = items.filter((item) => !item.placeholder);
 
