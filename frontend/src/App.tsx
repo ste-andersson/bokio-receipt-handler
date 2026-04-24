@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface User {
   email: string;
@@ -23,6 +25,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <h1>Välkommen till kvittohanteraren</h1>
       <p>Du är inloggad som:.</p>
       {error && <p style={{ color: "red" }}>{error}</p>}

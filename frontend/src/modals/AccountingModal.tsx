@@ -6,6 +6,7 @@ import {
   formatAmountOnBlur,
   parseAmount,
 } from "../utils/formatAmount";
+import { toast } from "react-toastify";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -93,7 +94,7 @@ function AccountingModal({
       );
       formData.append("image", image);
 
-      await fetch(`${API_URL}/accounting/submit-receipt`, {
+      const response = await fetch(`${API_URL}/accounting/submit-receipt`, {
         method: "POST",
         headers: {
           "X-Bokio-Token": token,
@@ -102,7 +103,14 @@ function AccountingModal({
         body: formData,
       });
 
+      if (!response.ok) {
+        throw new Error("Bokföring misslyckades");
+      }
+
+      toast.success("Kvitto bokfört!");
       onClose();
+    } catch {
+      toast.error("Något gick fel, försök igen.");
     } finally {
       setLoading(false);
     }
