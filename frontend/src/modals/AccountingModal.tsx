@@ -39,7 +39,7 @@ function AccountingModal({
 
   useEffect(() => {
     fetch(`${API_URL}/api/users/settings`, {
-      headers: { "X-Clerk-User_Id": clerkUserId },
+      headers: { "X-Clerk-User-Id": clerkUserId },
     })
       .then((res) => res.json())
       .then((data) => setCompanyId(data.companyId ?? ""));
