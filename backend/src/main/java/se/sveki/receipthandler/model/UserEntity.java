@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.util.UUID;
 
@@ -18,6 +20,9 @@ public class UserEntity {
     private String email;
     private String companyId;
     private String customPrompt;
+
+    @Enumerated(EnumType.STRING)
+    private AiProvider aiProvider = AiProvider.OPENAI;
 
     public UserEntity() {
     }
@@ -53,5 +58,13 @@ public class UserEntity {
 
     public void setCustomPrompt(String customPrompt) {
         this.customPrompt = customPrompt;
+    }
+
+    public AiProvider getAiProvider() {
+        return aiProvider;
+    }
+
+    public void setAiProvider(AiProvider aiProvider) {
+        this.aiProvider = aiProvider;
     }
 }

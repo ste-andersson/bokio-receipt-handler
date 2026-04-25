@@ -12,6 +12,7 @@ function SettingsModal({
   const [companyId, setCompanyId] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
   const [token, setToken] = useState(localStorage.getItem("bokioToken") ?? "");
+  const [aiProvider, setAiProvider] = useState("OPENAI");
 
   useEffect(() => {
     console.log("clerkUserId:", clerkUserId);
@@ -22,6 +23,8 @@ function SettingsModal({
       .then((data) => {
         setCompanyId(data.companyId ?? "");
         setCustomPrompt(data.customPrompt ?? "");
+        setAiProvider(data.aiProvider ?? "OPENAI");
+        console.log("Fetched settings:", data);
       });
   }, [clerkUserId]);
 
@@ -34,7 +37,7 @@ function SettingsModal({
         "Content-Type": "application/json",
         "X-Clerk-User-Id": clerkUserId,
       },
-      body: JSON.stringify({ companyId, customPrompt }),
+      body: JSON.stringify({ companyId, customPrompt, aiProvider }),
     });
 
     onClose();
@@ -58,6 +61,17 @@ function SettingsModal({
           value={token}
           onChange={(e) => setToken(e.target.value)}
         />
+
+        <label>AI-analys</label>
+        <select
+          value={aiProvider}
+          onChange={(e) => setAiProvider(e.target.value)}
+        >
+          <option value="OPENAI">OpenAI</option>
+          <option value="GROQ">Groq</option>
+          <option value="GROK">Grok</option>
+          <option value="OFF">Av</option>
+        </select>
 
         <label>Egna instruktioner till AI</label>
         <textarea

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { compressImage } from "../utils/compressImage";
 import { parseAmount, formatAmountOnBlur } from "../utils/formatAmount";
+import accounts from "../data/accounts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,6 +19,12 @@ const initialItems: JournalItem[] = [
   { account: "", debit: "", credit: "", placeholder: true },
 ];
 
+function buildAccountPlan(): string {
+  return Object.entries(accounts)
+    .map(([number, name]) => `${number}: ${name}`)
+    .join("\n");
+}
+
 export function useAccountingModal(
   image: File,
   clerkUserId: string,
@@ -28,6 +35,11 @@ export function useAccountingModal(
   const [items, setItems] = useState<JournalItem[]>(initialItems);
   const [companyId, setCompanyId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
+
+  const hasAnalyzed = useRef(false);
+  const imageRef = useRef(image);
+  const clerkUserIdRef = useRef(clerkUserId);
 
   useEffect(() => {
     fetch(`${API_URL}/api/users/settings`, {
@@ -36,6 +48,54 @@ export function useAccountingModal(
       .then((res) => res.json())
       .then((data) => setCompanyId(data.companyId ?? ""));
   }, [clerkUserId]);
+
+  useEffect(() => {
+    const analyze = async () => {
+      if (hasAnalyzed.current) return;
+      hasAnalyzed.current = true;
+      setSuggesting(true);
+      try {
+        const formData = new FormData();
+        const compressed = await compressImage(imageRef.current);
+        formData.append("image", compressed, "receipt.jpg");
+        formData.append("accountPlan", buildAccountPlan());
+
+        const response = await fetch(`${API_URL}/accounting/analyze`, {
+          method: "POST",
+          headers: { "X-Clerk-User-Id": clerkUserIdRef.current },
+          body: formData,
+        });
+
+        if (response.status === 204) return;
+
+        const suggestion = await response.json();
+        setTitle(suggestion.title ?? "");
+        setDate(suggestion.date ?? "");
+        setItems([
+          ...suggestion.items.map(
+            (item: { account: number; debit: number; credit: number }) => ({
+              account: String(item.account),
+              debit:
+                item.debit > 0
+                  ? formatAmountOnBlur(String(item.debit).replace(".", ","))
+                  : "",
+              credit:
+                item.credit > 0
+                  ? formatAmountOnBlur(String(item.credit).replace(".", ","))
+                  : "",
+            }),
+          ),
+          { account: "", debit: "", credit: "", placeholder: true },
+        ]);
+      } catch {
+        toast.error("Kunde inte analysera kvittot.");
+      } finally {
+        setSuggesting(false);
+      }
+    };
+
+    analyze();
+  }, []);
 
   const activeItems = items.filter((item) => !item.placeholder);
 
@@ -130,5 +190,6 @@ export function useAccountingModal(
     activateRow,
     handleRowBlur,
     handleSubmit,
+    suggesting,
   };
 }

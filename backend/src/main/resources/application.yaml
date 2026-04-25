@@ -15,3 +15,12 @@ spring:
 
 server:
   port: ${PORT:8080}
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+
+groq:
+  api-key: ${GROQ_API_KEY}
+
+grok:
+  api-key: ${GROK_API_KEY}

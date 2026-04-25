@@ -31,6 +31,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setCompanyId(request.getCompanyId());
         user.setCustomPrompt(request.getCustomPrompt());
+        user.setAiProvider(request.getAiProvider());
         repository.save(user);
     }
 
