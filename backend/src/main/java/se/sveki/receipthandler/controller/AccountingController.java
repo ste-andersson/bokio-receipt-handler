@@ -12,7 +12,7 @@ import se.sveki.receipthandler.service.UserService;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/accounting")
+@RequestMapping("/api/accounting")
 public class AccountingController {
 
     private final AccountingService accountingService;

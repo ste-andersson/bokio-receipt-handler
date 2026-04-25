@@ -59,7 +59,7 @@ export function useAccountingModal(
         formData.append("image", compressed, "receipt.jpg");
         formData.append("accountPlan", buildAccountPlan());
 
-        const response = await fetch(`${API_BASE_URL}/accounting/analyze`, {
+        const response = await fetch(`${API_BASE_URL}/api/accounting/analyze`, {
           method: "POST",
           headers: { "X-Clerk-User-Id": clerkUserIdRef.current },
           body: formData,
@@ -156,7 +156,7 @@ export function useAccountingModal(
       formData.append("image", compressed, "receipt.jpg");
 
       const response = await fetch(
-        `${API_BASE_URL}/accounting/submit-receipt`,
+        `${API_BASE_URL}/api/accounting/submit-receipt`,
         {
           method: "POST",
           headers: {
