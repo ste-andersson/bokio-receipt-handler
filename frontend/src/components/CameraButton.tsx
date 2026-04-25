@@ -23,7 +23,10 @@ function CameraButton({
         style={{ display: "none" }}
         onChange={handleCapture}
       />
-      <button onClick={() => inputRef.current?.click()}>
+      <button
+        className="btn-primary action-btn"
+        onClick={() => inputRef.current?.click()}
+      >
         Fotografera kvitto
       </button>
     </>

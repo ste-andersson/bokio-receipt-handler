@@ -31,13 +31,14 @@ function AccountingModal({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <img
-          className="receipt-photo"
-          src={URL.createObjectURL(image)}
-          alt="Kvitto"
-        />
+        <button className="close-button" onClick={onClose}>
+          ✕
+        </button>
+
+        <h2 className="modal-title">Bokför kvitto</h2>
 
         <input
+          className="title-input"
           type="text"
           placeholder="Titel"
           value={title}
@@ -45,103 +46,108 @@ function AccountingModal({
         />
 
         <input
+          className="date-input"
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
 
-        <table>
-          <thead>
-            <tr>
-              <th>Konto</th>
-              <th>Kontonamn</th>
-              <th>Debet</th>
-              <th>Kredit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => (
-              <tr
-                key={index}
-                className={item.placeholder ? "placeholder-row" : ""}
-                onClick={() => item.placeholder && activateRow(index)}
-                onBlur={() => handleRowBlur(index)}
-              >
-                <td>
-                  <input
-                    type="text"
-                    maxLength={4}
-                    value={item.account}
-                    onFocus={() => item.placeholder && activateRow(index)}
-                    onChange={(e) => {
-                      const updated = [...items];
-                      updated[index].account = e.target.value;
-                      setItems(updated);
-                    }}
-                  />
-                </td>
-                <td>{accounts[item.account] ?? "—"}</td>
-                <td>
-                  <input
-                    type="text"
-                    value={item.debit}
-                    onFocus={() => item.placeholder && activateRow(index)}
-                    onChange={(e) => {
-                      const updated = [...items];
-                      updated[index].debit = formatAmount(e.target.value);
-                      setItems(updated);
-                    }}
-                    onBlur={(e) => {
-                      const updated = [...items];
-                      updated[index].debit = formatAmountOnBlur(e.target.value);
-                      setItems(updated);
-                    }}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    value={item.credit}
-                    onFocus={() => item.placeholder && activateRow(index)}
-                    onChange={(e) => {
-                      const updated = [...items];
-                      updated[index].credit = formatAmount(e.target.value);
-                      setItems(updated);
-                    }}
-                    onBlur={(e) => {
-                      const updated = [...items];
-                      updated[index].credit = formatAmountOnBlur(
-                        e.target.value,
-                      );
-                      setItems(updated);
-                    }}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan={2}>
-                <strong>Summa</strong>
-              </td>
-              <td>
-                <strong>{totalDebit}</strong>
-              </td>
-              <td>
-                <strong>{totalCredit}</strong>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+        <img
+          className="receipt-photo"
+          src={URL.createObjectURL(image)}
+          alt="Kvitto"
+        />
 
-        <button onClick={onClose}>Stäng</button>
+        <div className="journal-grid">
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className={`journal-row ${item.placeholder ? "placeholder-row" : ""}`}
+              onClick={() => item.placeholder && activateRow(index)}
+              onBlur={() => handleRowBlur(index)}
+            >
+              <div className="account-label">
+                {item.placeholder ? (
+                  <span className="placeholder-text">
+                    Lägg till konto eller skriv nummer
+                  </span>
+                ) : (
+                  <>
+                    <input
+                      className="account-number"
+                      type="text"
+                      maxLength={4}
+                      value={item.account}
+                      onChange={(e) => {
+                        const updated = [...items];
+                        updated[index].account = e.target.value;
+                        setItems(updated);
+                      }}
+                    />
+                    <span className="account-name">
+                      {accounts[item.account] ?? "—"}
+                    </span>
+                  </>
+                )}
+              </div>
+              <input
+                className="debit-input"
+                type="text"
+                inputMode="decimal"
+                value={item.debit}
+                onFocus={() => item.placeholder && activateRow(index)}
+                onChange={(e) => {
+                  const updated = [...items];
+                  updated[index].debit = formatAmount(e.target.value);
+                  setItems(updated);
+                }}
+                onBlur={(e) => {
+                  const updated = [...items];
+                  updated[index].debit = formatAmountOnBlur(e.target.value);
+                  setItems(updated);
+                }}
+              />
+              <div className="t-separator" />
+              <input
+                className="credit-input"
+                type="text"
+                inputMode="decimal"
+                value={item.credit}
+                onFocus={() => item.placeholder && activateRow(index)}
+                onChange={(e) => {
+                  const updated = [...items];
+                  updated[index].credit = formatAmount(e.target.value);
+                  setItems(updated);
+                }}
+                onBlur={(e) => {
+                  const updated = [...items];
+                  updated[index].credit = formatAmountOnBlur(e.target.value);
+                  setItems(updated);
+                }}
+              />
+            </div>
+          ))}
 
-        {isBalanced && (
-          <button onClick={handleSubmit} disabled={loading}>
+          <div className="journal-summary">
+            <span className="summary-label-debit">Debet</span>
+            <span className="summary-label-credit">Kredit</span>
+            <strong className="summary-total-debit">{totalDebit}</strong>
+            <strong className="summary-total-credit">{totalCredit}</strong>
+          </div>
+        </div>
+
+        <div className="button-row">
+          <button className="cancel-button" onClick={onClose}>
+            Avbryt
+          </button>
+          <button
+            className="submit-button"
+            onClick={handleSubmit}
+            disabled={!isBalanced || loading}
+          >
             {loading ? "Bokför..." : "Bokför"}
           </button>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -3,8 +3,7 @@ import { toast } from "react-toastify";
 import { compressImage } from "../utils/compressImage";
 import { parseAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import accounts from "../data/accounts";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_BASE_URL } from "../config/api";
 
 export interface JournalItem {
   account: string;
@@ -42,7 +41,7 @@ export function useAccountingModal(
   const clerkUserIdRef = useRef(clerkUserId);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/users/settings`, {
+    fetch(`${API_BASE_URL}/api/users/settings`, {
       headers: { "X-Clerk-User-Id": clerkUserId },
     })
       .then((res) => res.json())
@@ -60,7 +59,7 @@ export function useAccountingModal(
         formData.append("image", compressed, "receipt.jpg");
         formData.append("accountPlan", buildAccountPlan());
 
-        const response = await fetch(`${API_URL}/accounting/analyze`, {
+        const response = await fetch(`${API_BASE_URL}/accounting/analyze`, {
           method: "POST",
           headers: { "X-Clerk-User-Id": clerkUserIdRef.current },
           body: formData,
@@ -156,14 +155,17 @@ export function useAccountingModal(
       const compressed = await compressImage(image);
       formData.append("image", compressed, "receipt.jpg");
 
-      const response = await fetch(`${API_URL}/accounting/submit-receipt`, {
-        method: "POST",
-        headers: {
-          "X-Bokio-Token": token,
-          "X-Bokio-Company-Id": companyId,
+      const response = await fetch(
+        `${API_BASE_URL}/accounting/submit-receipt`,
+        {
+          method: "POST",
+          headers: {
+            "X-Bokio-Token": token,
+            "X-Bokio-Company-Id": companyId,
+          },
+          body: formData,
         },
-        body: formData,
-      });
+      );
 
       if (!response.ok) throw new Error("Bokföring misslyckades");
 

@@ -1,0 +1,105 @@
+.app {
+  min-height: 100vh;
+  background: #faf8f3;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e8e1d5;
+}
+
+.topbar-logo {
+  height: 2rem;
+  width: auto;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.signin-container,
+.logged-in-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+  max-width: 360px;
+}
+
+.hero-logo {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+}
+
+.signin-subtitle {
+  font-size: 1rem;
+  color: #7a7a7a;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 1.1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: #556132;
+  color: white;
+  border: none;
+  padding: 1.1rem 2rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: #66753d;
+}
+
+.btn-secondary {
+  background: white;
+  color: #556132;
+  border: 1.5px solid #556132;
+}
+
+.btn-secondary:hover {
+  background: #eef2e3;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #4a4a4a;
+  border: 1px solid #e8e1d5;
+}
+
+.btn-ghost:hover {
+  background: #f4f0e8;
+}

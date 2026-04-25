@@ -9,67 +9,198 @@
 }
 
 .modal-content {
-  background: white;
-  padding: 1rem;
+  background: #f5f1ea;
+  padding: 1.5rem 1rem;
   width: 100%;
   max-width: 600px;
   box-sizing: border-box;
+  position: relative;
+  min-height: 100vh;
+  color: #2a2a2a;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #2a2a2a;
+  cursor: pointer;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 1.5rem 0;
+}
+
+.title-input {
+  display: block;
+  width: 100%;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2a2a2a;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin-bottom: 0.5rem;
+  box-sizing: border-box;
+}
+
+.date-input {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232a2a2a' viewBox='0 0 16 16'><path d='M4 0a1 1 0 0 1 1 1v1h6V1a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1V1a1 1 0 0 1 1-1zM2 4v2h12V4H2zm0 4v6h12V8H2z'/></svg>")
+    no-repeat right center;
+  padding-right: 1.5rem;
+  display: block;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #2a2a2a;
+  margin-bottom: 1.5rem;
+  padding: 0;
 }
 
 .receipt-photo {
   width: 100%;
   display: block;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.modal-content input[type="text"],
-.modal-content input[type="date"] {
-  display: block;
-  margin-bottom: 0.75rem;
-  font-size: 0.85rem;
-  padding: 0.4rem;
-  box-sizing: border-box;
+.journal-grid {
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr;
+  row-gap: 0.5rem;
+  column-gap: 0.7rem;
+  margin-bottom: 1.5rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
+.journal-row {
+  display: contents;
 }
 
-th,
-td {
-  text-align: left;
-  padding: 0.25rem;
-  overflow: hidden;
+.t-separator {
+  background: #c7bfb1;
+  align-self: stretch;
 }
 
-/* Kolumnbredder */
-th:nth-child(1),
-td:nth-child(1) {
+.account-label {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 0.5rem 0 0.25rem;
+  border-bottom: 1px solid #c7bfb1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.account-number {
+  font-weight: 600;
   width: 3rem;
-} /* Konto */
-th:nth-child(2),
-td:nth-child(2) {
-  width: auto;
-} /* Kontonamn */
-th:nth-child(3),
-td:nth-child(3) {
-  width: 4.5rem;
-} /* Debet */
-th:nth-child(4),
-td:nth-child(4) {
-  width: 4.5rem;
-} /* Kredit */
-
-/* Inputfält i tabellen */
-td input {
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 0.9rem;
-  padding: 0.2rem;
+  text-align: right;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #2a2a2a;
+  padding: 0;
 }
 
-tr.placeholder-row {
-  opacity: 0.4;
+.account-name {
+  color: #555;
+}
+
+.placeholder-text {
+  color: #999;
+  font-style: italic;
+}
+
+.debit-input,
+.credit-input {
+  border: 1px solid #d4ccbe;
+  background: white;
+  padding: 0.75rem;
+  font-size: 1.25rem;
+  text-align: center;
+  border-radius: 0.25rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.debit-input {
+  color: #5a6e3a;
+}
+
+.credit-input {
+  color: #a0533a;
+}
+
+.placeholder-row {
+  opacity: 0.5;
   cursor: pointer;
+}
+
+.journal-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #ebe4d6;
+  border-radius: 0.5rem;
+}
+
+.summary-label-debit,
+.summary-label-credit {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.summary-total-debit {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #5a6e3a;
+}
+
+.summary-total-credit {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #a0533a;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancel-button {
+  padding: 1rem;
+  border: 1px solid #c7bfb1;
+  background: transparent;
+  color: #a0533a;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.submit-button {
+  padding: 1rem;
+  border: none;
+  background: #5a6e3a;
+  color: white;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  background: #c7bfb1;
+  cursor: not-allowed;
 }
