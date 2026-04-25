@@ -117,6 +117,8 @@ public class AiService {
             ChatCompletion completion = client.chat().completions().create(params);
             String json = completion.choices().get(0).message().content().orElseThrow();
 
+            json = json.replaceAll("```json\\s*", "").replaceAll("```\\s*", "").trim();
+
             return objectMapper.readValue(json, AccountingSuggestion.class);
 
         } catch (Exception e) {

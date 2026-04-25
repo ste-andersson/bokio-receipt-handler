@@ -8,7 +8,6 @@ import se.sveki.receipthandler.model.request.UserSyncRequest;
 import se.sveki.receipthandler.service.UserService;
 
 import java.util.List;
-import java.util.UUID;
 
 @CrossOrigin(origins = "*")
 @RestController

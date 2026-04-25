@@ -30,7 +30,7 @@ public class AccountingController {
     @PostMapping("/submit-receipt")
     public ResponseEntity<Void> submitReceipt(
             @RequestPart("data") AccountingRequest request,
-            @RequestPart("image") MultipartFile image,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestHeader("X-Bokio-Token") String token,
             @RequestHeader("X-Bokio-Company-Id") String companyId,
             @RequestHeader("X-Clerk-User-Id") String clerkUserId

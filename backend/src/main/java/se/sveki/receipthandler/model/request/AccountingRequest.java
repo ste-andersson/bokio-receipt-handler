@@ -7,6 +7,7 @@ public class AccountingRequest {
     private String title;
     private String date;
     private List<JournalItem> items;
+    private String uploadId;
 
     public static class JournalItem {
         private int account;
@@ -27,4 +28,6 @@ public class AccountingRequest {
     public void setDate(String date) { this.date = date; }
     public List<JournalItem> getItems() { return items; }
     public void setItems(List<JournalItem> items) { this.items = items; }
+    public String getUploadId() { return uploadId; }
+    public void setUploadId(String uploadId) { this.uploadId = uploadId; }
 }
