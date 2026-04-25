@@ -7,12 +7,15 @@ import "./StartPage.css";
 import { API_BASE_URL } from "./config/api";
 import logo from "./assets/logo-tekont.png";
 import logomini from "./assets/logo-symbol.png";
+import BacklogModal from "./modals/BacklogModal";
 
 function StartPage() {
   const { user, isLoaded } = useUser();
   const [image, setImage] = useState<File | null>(null);
+  const [uploadId, setUploadId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const clerkUserId = user?.id ?? "";
+  const [backlogOpen, setBacklogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -38,7 +41,6 @@ function StartPage() {
           </div>
         )}
       </header>
-
       <main className="main-content">
         {!user ? (
           <div className="signin-container">
@@ -52,8 +54,16 @@ function StartPage() {
           <div className="logged-in-content">
             <img src={logo} alt="Tekont" className="hero-logo" />
             <div className="action-buttons">
-              <CameraButton onImageCapture={setImage} />
-              <button className="btn-secondary action-btn" onClick={() => {}}>
+              <CameraButton
+                onImageCapture={(file) => {
+                  setUploadId(undefined);
+                  setImage(file);
+                }}
+              />
+              <button
+                className="btn-secondary action-btn"
+                onClick={() => setBacklogOpen(true)}
+              >
                 Kvittobacklog
               </button>
               <button
@@ -66,18 +76,32 @@ function StartPage() {
           </div>
         )}
       </main>
-
       {image && (
         <AccountingModal
           image={image}
           clerkUserId={clerkUserId}
-          onClose={() => setImage(null)}
+          uploadId={uploadId}
+          onClose={() => {
+            setImage(null);
+            setUploadId(undefined);
+          }}
         />
       )}
       {settingsOpen && (
         <SettingsModal
           clerkUserId={clerkUserId}
           onClose={() => setSettingsOpen(false)}
+        />
+      )}
+      {backlogOpen && (
+        <BacklogModal
+          clerkUserId={clerkUserId}
+          onClose={() => setBacklogOpen(false)}
+          onImageSelect={(file: File, id: string) => {
+            setUploadId(id);
+            setImage(file);
+            setBacklogOpen(false);
+          }}
         />
       )}
     </div>

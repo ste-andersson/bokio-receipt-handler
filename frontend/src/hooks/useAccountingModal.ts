@@ -28,6 +28,7 @@ export function useAccountingModal(
   image: File,
   clerkUserId: string,
   onClose: () => void,
+  uploadId?: string,
 ) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -107,7 +108,9 @@ export function useAccountingModal(
     0,
   );
   const isBalanced =
-    Math.abs(totalDebit - totalCredit) < 0.01 && totalDebit > 0;
+    Math.abs(totalDebit - totalCredit) < 0.01 &&
+    totalDebit > 0 &&
+    title.trim().length > 0;
 
   const formattedTotalDebit = formatAmountOnBlur(
     String(totalDebit).replace(".", ","),
@@ -147,11 +150,13 @@ export function useAccountingModal(
                 debit: parseAmount(item.debit),
                 credit: parseAmount(item.credit),
               })),
+              uploadId: uploadId ?? null,
             }),
           ],
           { type: "application/json" },
         ),
       );
+
       const compressed = await compressImage(image);
       formData.append("image", compressed, "receipt.jpg");
 

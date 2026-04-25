@@ -2,15 +2,22 @@ import "./AccountingModal.css";
 import accounts from "../data/accounts";
 import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import { useAccountingModal } from "../hooks/useAccountingModal";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 function AccountingModal({
   image,
   onClose,
   clerkUserId,
+  uploadId,
 }: {
   image: File;
   onClose: () => void;
   clerkUserId: string;
+  uploadId?: string;
 }) {
   const {
     title,
@@ -26,7 +33,7 @@ function AccountingModal({
     activateRow,
     handleRowBlur,
     handleSubmit,
-  } = useAccountingModal(image, clerkUserId, onClose);
+  } = useAccountingModal(image, clerkUserId, onClose, uploadId);
 
   return (
     <div className="modal-overlay">
@@ -52,11 +59,20 @@ function AccountingModal({
           onChange={(e) => setDate(e.target.value)}
         />
 
-        <img
-          className="receipt-photo"
-          src={URL.createObjectURL(image)}
-          alt="Kvitto"
-        />
+        {image.type === "application/pdf" ? (
+          <Document file={image}>
+            <Page
+              pageNumber={1}
+              width={window.innerWidth > 600 ? 560 : window.innerWidth - 32}
+            />
+          </Document>
+        ) : (
+          <img
+            className="receipt-photo"
+            src={URL.createObjectURL(image)}
+            alt="Kvitto"
+          />
+        )}
 
         <div className="journal-grid">
           {items.map((item, index) => (
