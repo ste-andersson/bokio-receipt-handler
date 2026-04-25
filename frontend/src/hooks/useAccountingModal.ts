@@ -162,6 +162,7 @@ export function useAccountingModal(
           headers: {
             "X-Bokio-Token": token,
             "X-Bokio-Company-Id": companyId,
+            "X-Clerk-User-Id": clerkUserId,
           },
           body: formData,
         },

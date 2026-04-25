@@ -9,8 +9,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import se.sveki.receipthandler.model.LogEntity;
 import se.sveki.receipthandler.model.bokio.BokioJournalEntry;
 import se.sveki.receipthandler.model.request.AccountingRequest;
+import se.sveki.receipthandler.repository.LogRepository;
+import se.sveki.receipthandler.repository.UserRepository;
 
 import java.util.List;
 
@@ -21,10 +24,24 @@ public class AccountingService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final UserRepository userRepository;
+    private final LogRepository logRepository;
 
-    public void submitReceipt(AccountingRequest request, MultipartFile image, String token, String companyId) {
+    public AccountingService(UserRepository userRepository, LogRepository logRepository) {
+        this.userRepository = userRepository;
+        this.logRepository = logRepository;
+    }
+
+    public void submitReceipt(AccountingRequest request, MultipartFile image, String token, String companyId, String clerkUserId) {
         String journalEntryId = createJournalEntry(request, token, companyId);
         uploadImage(image, token, companyId, journalEntryId);
+        logSubmission(clerkUserId);
+    }
+
+    private void logSubmission(String clerkUserId) {
+        userRepository.findByClerkUserId(clerkUserId).ifPresent(user ->
+                logRepository.save(new LogEntity(user.getId()))
+        );
     }
 
     private String createJournalEntry(AccountingRequest request, String token, String companyId) {

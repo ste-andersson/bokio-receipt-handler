@@ -32,9 +32,10 @@ public class AccountingController {
             @RequestPart("data") AccountingRequest request,
             @RequestPart("image") MultipartFile image,
             @RequestHeader("X-Bokio-Token") String token,
-            @RequestHeader("X-Bokio-Company-Id") String companyId
+            @RequestHeader("X-Bokio-Company-Id") String companyId,
+            @RequestHeader("X-Clerk-User-Id") String clerkUserId
     ) {
-        accountingService.submitReceipt(request, image, token, companyId);
+        accountingService.submitReceipt(request, image, token, companyId, clerkUserId);
         return ResponseEntity.ok().build();
     }
 
