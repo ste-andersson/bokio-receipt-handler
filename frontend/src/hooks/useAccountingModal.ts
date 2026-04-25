@@ -157,8 +157,13 @@ export function useAccountingModal(
         ),
       );
 
-      const compressed = await compressImage(image);
-      formData.append("image", compressed, "receipt.jpg");
+      const compressed =
+        image.type === "application/pdf" ? image : await compressImage(image);
+      formData.append(
+        "image",
+        compressed,
+        image.type === "application/pdf" ? "receipt.pdf" : "receipt.jpg",
+      );
 
       const response = await fetch(
         `${API_BASE_URL}/api/accounting/submit-receipt`,
