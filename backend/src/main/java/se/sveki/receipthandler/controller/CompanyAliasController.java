@@ -26,7 +26,7 @@ public class CompanyAliasController {
     ) {
         List<Map<String, String>> result = companyAliasService.getCompanyAliasesByClerkUserId(clerkUserId)
                 .stream()
-                .map(a -> Map.of("alias", a.getCompanyAlias()))
+                .map(a -> Map.of("companyAlias", a.getCompanyAlias()))
                 .toList();
         return ResponseEntity.ok(result);
     }
