@@ -145,6 +145,21 @@
   box-shadow: 0 10px 20px -14px rgba(85, 97, 50, 0.85);
 }
 
+.settings-alias-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-alias-delete {
+  background: none;
+  border: none;
+  color: #a45d2a;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 0.25rem;
+}
+
 @media (max-width: 760px) {
   .settings-modal-overlay {
     padding: 0;

@@ -40,4 +40,13 @@ public class CompanyAliasController {
         CompanyAliasEntity created = companyAliasService.createCompanyAlias(companyAlias, clerkUserId);
         return ResponseEntity.ok(Map.of("companyAlias", created.getCompanyAlias()));
     }
+
+    @DeleteMapping("/{companyAlias}")
+    public ResponseEntity<Void> deleteCompanyAlias(
+            @PathVariable String companyAlias,
+            @RequestHeader("X-Clerk-User-Id") String clerkUserId
+    ) {
+        companyAliasService.deleteCompanyAlias(companyAlias, clerkUserId);
+        return ResponseEntity.ok().build();
+    }
 }

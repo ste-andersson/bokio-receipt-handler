@@ -31,4 +31,12 @@ public class CompanyAliasService {
                 ))
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+    public void deleteCompanyAlias(String companyAlias, String clerkUserId) {
+        userRepository.findByClerkUserId(clerkUserId).ifPresent(user ->
+                companyAliasRepository.findByCompanyAlias(companyAlias)
+                        .filter(a -> a.getCompanyId().equals(user.getCompanyId()))
+                        .ifPresent(companyAliasRepository::delete)
+        );
+    }
 }
