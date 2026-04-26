@@ -10,6 +10,6 @@ export default defineConfig({
     },
   },
   preview: {
-    allowedHosts: ["receipt-handler.up.railway.app"],
+    allowedHosts: ["receipt-handler.up.railway.app", "app.tekont.se"],
   },
 });
