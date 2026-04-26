@@ -21,6 +21,9 @@ public class MailService {
     }
 
     public void processInbound(PostmarkInboundRequest request) {
+        System.out.println("To: " + request.getTo());
+        System.out.println("Alias: " + extractAlias(request.getTo()));
+        System.out.println("Attachments: " + (request.getAttachments() != null ? request.getAttachments().size() : 0));
         String alias = extractAlias(request.getTo());
 
         companyAliasRepository.findByAlias(alias).ifPresent(companyAlias -> {
