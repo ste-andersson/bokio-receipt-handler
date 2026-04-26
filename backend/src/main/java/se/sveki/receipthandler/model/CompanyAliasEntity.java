@@ -1,7 +1,6 @@
 package se.sveki.receipthandler.model;
 
 import jakarta.persistence.*;
-import java.util.UUID;
 
 @Entity
 public class CompanyAliasEntity {
@@ -10,17 +9,17 @@ public class CompanyAliasEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String alias;
+    private String companyAlias;
     private String companyId;
 
     public CompanyAliasEntity() {}
 
-    public CompanyAliasEntity(String alias, String companyId) {
-        this.alias = alias;
+    public CompanyAliasEntity(String companyAlias, String companyId) {
+        this.companyAlias = companyAlias;
         this.companyId = companyId;
     }
 
     public Long getId() { return id; }
-    public String getAlias() { return alias; }
+    public String getCompanyAlias() { return companyAlias; }
     public String getCompanyId() { return companyId; }
 }

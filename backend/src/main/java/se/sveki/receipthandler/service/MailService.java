@@ -7,7 +7,6 @@ import se.sveki.receipthandler.repository.CompanyAliasRepository;
 import se.sveki.receipthandler.repository.ReceiptRepository;
 
 import java.util.Base64;
-import java.util.List;
 
 @Service
 public class MailService {
@@ -23,7 +22,7 @@ public class MailService {
     public void processInbound(PostmarkInboundRequest request) {
         String alias = extractAlias(request.getTo());
 
-        companyAliasRepository.findByAlias(alias).ifPresent(companyAlias -> {
+        companyAliasRepository.findByCompanyAlias(alias).ifPresent(companyAlias -> {
             if (request.getAttachments() == null || request.getAttachments().isEmpty()) return;
 
             request.getAttachments().stream()
