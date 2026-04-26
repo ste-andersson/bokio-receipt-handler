@@ -8,6 +8,7 @@ import { API_BASE_URL } from "./config/api";
 import logo from "./assets/logo-tekont.png";
 import logomini from "./assets/logo-symbol.png";
 import BacklogModal from "./modals/BacklogModal";
+import MailBacklogModal from "./modals/MailBacklogModal";
 
 function StartPage() {
   const { user, isLoaded } = useUser();
@@ -16,6 +17,7 @@ function StartPage() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const clerkUserId = user?.id ?? "";
   const [backlogOpen, setBacklogOpen] = useState(false);
+  const [mailBacklogOpen, setMailBacklogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -64,7 +66,13 @@ function StartPage() {
                 className="btn-secondary action-btn"
                 onClick={() => setBacklogOpen(true)}
               >
-                Kvittobacklog
+                Bokio-backlog
+              </button>
+              <button
+                className="btn-secondary action-btn"
+                onClick={() => setMailBacklogOpen(true)}
+              >
+                Tekont-backlog
               </button>
               <button
                 className="btn-ghost action-btn"
@@ -101,6 +109,16 @@ function StartPage() {
             setUploadId(id);
             setImage(file);
             setBacklogOpen(false);
+          }}
+        />
+      )}
+      {mailBacklogOpen && (
+        <MailBacklogModal
+          clerkUserId={clerkUserId}
+          onClose={() => setMailBacklogOpen(false)}
+          onImageSelect={(file: File) => {
+            setImage(file);
+            setMailBacklogOpen(false);
           }}
         />
       )}
