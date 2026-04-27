@@ -65,7 +65,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           data.map((a: { companyAlias: string }) => a.companyAlias),
         ),
       );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   const handleTokenBlur = () => {
@@ -90,19 +90,29 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   };
 
   const handleAddCompanyAlias = async () => {
-    if (!newCompanyAlias.trim()) return;
-    await authFetch(`${API_BASE_URL}/api/companyalias`, {
+    const trimmed = newCompanyAlias.trim().toLowerCase();
+    if (!trimmed) return;
+    if (companyAliases.includes(trimmed)) {
+      toast.error(`Alias ${trimmed}@kvitto.tekont.se finns redan`);
+      return;
+    }
+    const res = await authFetch(`${API_BASE_URL}/api/companyalias`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        companyAlias: newCompanyAlias.trim().toLowerCase(),
-      }),
+      body: JSON.stringify({ companyAlias: trimmed }),
     });
-    setCompanyAliases([
-      ...companyAliases,
-      newCompanyAlias.trim().toLowerCase(),
-    ]);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(
+        data.error
+          ? `Alias "${trimmed}" finns redan`
+          : "Alias kunde inte läggas till",
+      );
+      return;
+    }
+    setCompanyAliases([...companyAliases, trimmed]);
     setNewCompanyAlias("");
+    toast.success(`Alias "${trimmed}" lades till`);
   };
 
   const handleDeleteCompanyAlias = async (companyAlias: string) => {

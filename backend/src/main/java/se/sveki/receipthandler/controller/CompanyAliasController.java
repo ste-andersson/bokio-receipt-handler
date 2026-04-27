@@ -35,8 +35,12 @@ public class CompanyAliasController {
             @RequestBody Map<String, String> body
     ) {
         String companyAlias = body.get("companyAlias");
-        CompanyAliasEntity created = companyAliasService.createCompanyAlias(companyAlias, jwt.getSubject());
-        return ResponseEntity.ok(Map.of("companyAlias", created.getCompanyAlias()));
+        try {
+            CompanyAliasEntity created = companyAliasService.createCompanyAlias(companyAlias, jwt.getSubject());
+            return ResponseEntity.ok(Map.of("companyAlias", created.getCompanyAlias()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(409).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{companyAlias}")

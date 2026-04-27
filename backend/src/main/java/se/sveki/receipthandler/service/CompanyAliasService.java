@@ -25,9 +25,13 @@ public class CompanyAliasService {
     }
 
     public CompanyAliasEntity createCompanyAlias(String companyAlias, String clerkUserId) {
+        String normalizedAlias = companyAlias.toLowerCase();
+        if (companyAliasRepository.findByCompanyAlias(normalizedAlias).isPresent()) {
+            throw new IllegalArgumentException("Alias already exists: " + normalizedAlias);
+        }
         return userRepository.findByClerkUserId(clerkUserId)
                 .map(user -> companyAliasRepository.save(
-                        new CompanyAliasEntity(companyAlias.toLowerCase(), user.getCompanyId())
+                        new CompanyAliasEntity(normalizedAlias, user.getCompanyId())
                 ))
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
