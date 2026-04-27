@@ -13,6 +13,7 @@ function SettingsModal({
   const [companyId, setCompanyId] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
   const [token, setToken] = useState(localStorage.getItem("bokioToken") ?? "");
+  const [editingToken, setEditingToken] = useState(!localStorage.getItem("bokioToken"));
   const [aiProvider, setAiProvider] = useState("OPENAI");
   const [companyAliases, setCompanyAliases] = useState<string[]>([]);
   const [newCompanyAlias, setNewCompanyAlias] = useState("");
@@ -38,6 +39,15 @@ function SettingsModal({
         ),
       );
   }, [clerkUserId]);
+
+  const handleTokenBlur = () => {
+    const trimmed = token.trim();
+    if (trimmed) {
+      localStorage.setItem("bokioToken", trimmed);
+      setToken(trimmed);
+      setEditingToken(false);
+    }
+  };
 
   const handleSave = async () => {
     localStorage.setItem("bokioToken", token);
@@ -96,15 +106,30 @@ function SettingsModal({
               onChange={(e) => setCompanyId(e.target.value)}
             />
           </label>
-          <label className="modal-field">
+          <div className="modal-field">
             <span className="modal-label">Bokio Token</span>
-            <input
-              className="modal-input"
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-            />
-          </label>
+            {editingToken ? (
+              <textarea
+                className="modal-input settings-token-input"
+                placeholder="Klistra in din Bokio-token här"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                onBlur={handleTokenBlur}
+                autoFocus
+              />
+            ) : (
+              <div className="settings-token-set">
+                <span>Token inlagd ✓</span>
+                <button
+                  type="button"
+                  className="settings-token-replace"
+                  onClick={() => { setToken(""); setEditingToken(true); }}
+                >
+                  Byt ut
+                </button>
+              </div>
+            )}
+          </div>
           <label className="modal-field">
             <span className="modal-label">AI-analys</span>
             <select

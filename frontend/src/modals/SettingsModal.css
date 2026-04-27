@@ -1,3 +1,33 @@
+.settings-token-set {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  color: #556132;
+  font-weight: 500;
+}
+
+.settings-token-replace {
+  background: none;
+  border: none;
+  color: #a45d2a;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 400;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.settings-token-input {
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  min-height: 4.5rem;
+  resize: none;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
 .settings-hint {
   margin: 0.25rem 0 0.5rem;
   font-size: 0.875rem;
