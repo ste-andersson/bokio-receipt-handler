@@ -13,7 +13,7 @@
 .modal-content {
   position: relative;
   width: min(680px, 100%);
-  max-height: min(90vh, 920px);
+  max-height: 90vh;
   overflow-y: auto;
   box-sizing: border-box;
   padding: 2rem;

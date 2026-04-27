@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/react";
+import { toast } from "react-toastify";
 import "./Modal.css";
 import "./SettingsModal.css";
 import { API_BASE_URL } from "../config/api";
@@ -84,6 +85,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ companyId, customPrompt, aiProvider }),
     });
+    toast.success("Inställningar sparade");
     onClose();
   };
 
