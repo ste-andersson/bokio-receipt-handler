@@ -1,3 +1,21 @@
+.settings-verify {
+  font-size: 0.8rem;
+  margin-top: 0.1rem;
+}
+
+.settings-verify-loading {
+  color: #888888;
+}
+
+.settings-verify-success {
+  color: #556132;
+  font-weight: 500;
+}
+
+.settings-verify-error {
+  color: #a0533a;
+}
+
 .settings-token-set {
   display: flex;
   align-items: center;

@@ -3,6 +3,8 @@ import "./Modal.css";
 import "./SettingsModal.css";
 import { API_BASE_URL } from "../config/api";
 
+type VerifyStatus = "idle" | "loading" | "success" | "error";
+
 function SettingsModal({
   onClose,
   clerkUserId,
@@ -13,10 +15,37 @@ function SettingsModal({
   const [companyId, setCompanyId] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
   const [token, setToken] = useState(localStorage.getItem("bokioToken") ?? "");
-  const [editingToken, setEditingToken] = useState(!localStorage.getItem("bokioToken"));
+  const [editingToken, setEditingToken] = useState(
+    !localStorage.getItem("bokioToken"),
+  );
   const [aiProvider, setAiProvider] = useState("OPENAI");
   const [companyAliases, setCompanyAliases] = useState<string[]>([]);
   const [newCompanyAlias, setNewCompanyAlias] = useState("");
+  const [verifyStatus, setVerifyStatus] = useState<VerifyStatus>("idle");
+  const [companyName, setCompanyName] = useState("");
+
+  const verifyCompany = async (tkn: string, cid: string) => {
+    if (!tkn || !cid) return;
+    setVerifyStatus("loading");
+    setCompanyName("");
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bokio/company`, {
+        headers: {
+          "X-Bokio-Token": tkn,
+          "X-Bokio-Company-Id": cid,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCompanyName(data.name ?? "");
+        setVerifyStatus("success");
+      } else {
+        setVerifyStatus("error");
+      }
+    } catch {
+      setVerifyStatus("error");
+    }
+  };
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/users/settings`, {
@@ -24,9 +53,12 @@ function SettingsModal({
     })
       .then((res) => res.json())
       .then((data) => {
-        setCompanyId(data.companyId ?? "");
+        const cid = data.companyId ?? "";
+        setCompanyId(cid);
         setCustomPrompt(data.customPrompt ?? "");
         setAiProvider(data.aiProvider ?? "OPENAI");
+        const tkn = localStorage.getItem("bokioToken") ?? "";
+        if (cid && tkn) verifyCompany(tkn, cid);
       });
 
     fetch(`${API_BASE_URL}/api/companyalias`, {
@@ -46,6 +78,7 @@ function SettingsModal({
       localStorage.setItem("bokioToken", trimmed);
       setToken(trimmed);
       setEditingToken(false);
+      verifyCompany(trimmed, companyId);
     }
   };
 
@@ -104,7 +137,23 @@ function SettingsModal({
               type="text"
               value={companyId}
               onChange={(e) => setCompanyId(e.target.value)}
+              onBlur={(e) => verifyCompany(token, e.target.value)}
             />
+            {verifyStatus === "loading" && (
+              <span className="settings-verify settings-verify-loading">
+                Verifierar...
+              </span>
+            )}
+            {verifyStatus === "success" && (
+              <span className="settings-verify settings-verify-success">
+                ✓ {companyName}
+              </span>
+            )}
+            {verifyStatus === "error" && (
+              <span className="settings-verify settings-verify-error">
+                Kunde inte verifiera company ID med token
+              </span>
+            )}
           </label>
           <div className="modal-field">
             <span className="modal-label">Bokio Token</span>
@@ -123,7 +172,10 @@ function SettingsModal({
                 <button
                   type="button"
                   className="settings-token-replace"
-                  onClick={() => { setToken(""); setEditingToken(true); }}
+                  onClick={() => {
+                    setToken("");
+                    setEditingToken(true);
+                  }}
                 >
                   Byt ut
                 </button>
@@ -199,6 +251,7 @@ function SettingsModal({
           <button
             className="modal-button modal-button-primary"
             onClick={handleSave}
+            disabled={verifyStatus === "loading" || verifyStatus === "error"}
           >
             Spara
           </button>
