@@ -130,7 +130,7 @@ function SettingsModal({
           <div className="modal-field modal-field-full">
             <span className="modal-label">Mailalias</span>
             <p className="settings-hint">
-              Skicka kvitton till ditt-alias@kvitto.tekont.se
+              Skicka kvitton till ***@kvitto.tekont.se
             </p>
             {companyAliases.length > 0 && (
               <ul className="settings-alias-list">
@@ -149,7 +149,7 @@ function SettingsModal({
             )}
             <div className="settings-alias-add">
               <input
-                className="settings-input"
+                className="modal-input"
                 type="text"
                 placeholder="nytt-alias"
                 value={newCompanyAlias}

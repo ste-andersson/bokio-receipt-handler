@@ -10,19 +10,26 @@
   margin: 0 0 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  align-items: flex-start;
+  gap: 0.35rem;
 }
 
 .settings-alias-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.2rem;
+  background: #ebe4d6;
+  border-radius: 0.4rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.6rem;
+  font-size: 0.9rem;
 }
 
 .settings-alias-add {
   display: flex;
-  gap: 0.6rem;
+  flex-direction: column;
+  gap: 0.5rem;
   align-items: flex-start;
+  max-width: 50%;
 }
 
 .settings-alias-delete {
@@ -30,6 +37,7 @@
   border: none;
   color: #a45d2a;
   cursor: pointer;
-  font-size: 1rem;
-  padding: 0 0.25rem;
+  font-size: 0.85rem;
+  padding: 0 0.1rem;
+  line-height: 1;
 }
