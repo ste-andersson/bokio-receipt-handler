@@ -1,42 +1,3 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  overflow-y: auto;
-}
-
-.modal-content {
-  background: #f5f1ea;
-  padding: 1.5rem 1rem;
-  width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
-  position: relative;
-  min-height: 100vh;
-  color: #2a2a2a;
-}
-
-.close-button {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #2a2a2a;
-  cursor: pointer;
-}
-
-.modal-title {
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-  margin: 0 0 1.5rem 0;
-}
-
 .title-input {
   display: block;
   width: 100%;
@@ -51,9 +12,6 @@
 }
 
 .date-input {
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232a2a2a' viewBox='0 0 16 16'><path d='M4 0a1 1 0 0 1 1 1v1h6V1a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1V1a1 1 0 0 1 1-1zM2 4v2h12V4H2zm0 4v6h12V8H2z'/></svg>")
-    no-repeat right center;
-  padding-right: 1.5rem;
   display: block;
   border: none;
   background: transparent;
@@ -171,36 +129,4 @@
   text-align: center;
   font-size: 1.5rem;
   color: #a0533a;
-}
-
-.button-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.cancel-button {
-  padding: 1rem;
-  border: 1px solid #c7bfb1;
-  background: transparent;
-  color: #a0533a;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.submit-button {
-  padding: 1rem;
-  border: none;
-  background: #5a6e3a;
-  color: white;
-  font-size: 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.submit-button:disabled {
-  background: #c7bfb1;
-  cursor: not-allowed;
 }

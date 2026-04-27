@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import "./Modal.css";
 import "./BacklogModal.css";
 import { API_BASE_URL } from "../config/api";
 
@@ -122,7 +123,7 @@ function BacklogModal({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
+        <button className="modal-close" onClick={onClose}>
           ✕
         </button>
         <h2 className="modal-title">Kvittobacklog</h2>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./Modal.css";
 import "./SettingsModal.css";
 import { API_BASE_URL } from "../config/api";
 
@@ -79,35 +80,35 @@ function SettingsModal({
   };
 
   return (
-    <div className="settings-modal-overlay">
-      <div className="settings-modal-content">
-        <h2 className="settings-modal-title">Inställningar</h2>
-        <p className="settings-modal-subtitle">
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h2 className="modal-title">Inställningar</h2>
+        <p className="modal-subtitle">
           Hantera integrationer och hur AI-assistenten arbetar.
         </p>
-        <div className="settings-form-grid">
-          <label className="settings-field">
-            <span className="settings-label">Company ID</span>
+        <div className="modal-form-grid">
+          <label className="modal-field">
+            <span className="modal-label">Company ID</span>
             <input
-              className="settings-input"
+              className="modal-input"
               type="text"
               value={companyId}
               onChange={(e) => setCompanyId(e.target.value)}
             />
           </label>
-          <label className="settings-field">
-            <span className="settings-label">Bokio Token</span>
+          <label className="modal-field">
+            <span className="modal-label">Bokio Token</span>
             <input
-              className="settings-input"
+              className="modal-input"
               type="password"
               value={token}
               onChange={(e) => setToken(e.target.value)}
             />
           </label>
-          <label className="settings-field">
-            <span className="settings-label">AI-analys</span>
+          <label className="modal-field">
+            <span className="modal-label">AI-analys</span>
             <select
-              className="settings-input settings-select"
+              className="modal-input modal-select"
               value={aiProvider}
               onChange={(e) => setAiProvider(e.target.value)}
             >
@@ -117,17 +118,17 @@ function SettingsModal({
               <option value="OFF">Av</option>
             </select>
           </label>
-          <label className="settings-field settings-field-full">
-            <span className="settings-label">Egna instruktioner till AI</span>
+          <label className="modal-field modal-field-full">
+            <span className="modal-label">Egna instruktioner till AI</span>
             <textarea
-              className="settings-input settings-textarea"
+              className="modal-input modal-textarea"
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
               rows={4}
             />
           </label>
-          <div className="settings-field settings-field-full">
-            <span className="settings-label">Mailalias</span>
+          <div className="modal-field modal-field-full">
+            <span className="modal-label">Mailalias</span>
             <p className="settings-hint">
               Skicka kvitton till ditt-alias@kvitto.tekont.se
             </p>
@@ -155,7 +156,7 @@ function SettingsModal({
                 onChange={(e) => setNewCompanyAlias(e.target.value)}
               />
               <button
-                className="settings-button settings-button-secondary"
+                className="modal-button modal-button-secondary"
                 onClick={handleAddCompanyAlias}
               >
                 Lägg till
@@ -163,15 +164,15 @@ function SettingsModal({
             </div>
           </div>
         </div>
-        <div className="settings-actions">
+        <div className="modal-actions">
           <button
-            className="settings-button settings-button-secondary"
+            className="modal-button modal-button-secondary"
             onClick={onClose}
           >
             Stäng
           </button>
           <button
-            className="settings-button settings-button-primary"
+            className="modal-button modal-button-primary"
             onClick={handleSave}
           >
             Spara

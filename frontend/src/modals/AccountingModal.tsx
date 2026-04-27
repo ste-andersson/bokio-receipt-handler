@@ -1,3 +1,4 @@
+import "./Modal.css";
 import "./AccountingModal.css";
 import accounts from "../data/accounts";
 import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
@@ -38,7 +39,7 @@ function AccountingModal({
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
+        <button className="modal-close" onClick={onClose}>
           ✕
         </button>
 
@@ -152,12 +153,12 @@ function AccountingModal({
           </div>
         </div>
 
-        <div className="button-row">
-          <button className="cancel-button" onClick={onClose}>
+        <div className="modal-actions">
+          <button className="modal-button modal-button-secondary" onClick={onClose}>
             Avbryt
           </button>
           <button
-            className="submit-button"
+            className="modal-button modal-button-primary"
             onClick={handleSubmit}
             disabled={!isBalanced || loading}
           >
