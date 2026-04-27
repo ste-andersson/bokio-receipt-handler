@@ -3,6 +3,7 @@ import "./AccountingModal.css";
 import accounts from "../data/accounts";
 import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import { useAccountingModal } from "../hooks/useAccountingModal";
+import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -26,6 +27,7 @@ function AccountingModal({
     items,
     setItems,
     loading,
+    suggesting,
     totalDebit,
     totalCredit,
     isBalanced,
@@ -34,6 +36,21 @@ function AccountingModal({
     handleSubmit,
   } = useAccountingModal(image, onClose, uploadId);
 
+  const titleRef = useRef<HTMLInputElement>(null);
+  const wasSuggesting = useRef(false);
+  const [titlePulse, setTitlePulse] = useState(false);
+
+  useEffect(() => {
+    if (suggesting) {
+      wasSuggesting.current = true;
+    } else if (wasSuggesting.current) {
+      wasSuggesting.current = false;
+      titleRef.current?.focus();
+      titleRef.current?.select();
+      setTitlePulse(true);
+    }
+  }, [suggesting]);
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -41,18 +58,27 @@ function AccountingModal({
           ✕
         </button>
 
+        {suggesting && (
+          <div className="suggesting-banner">
+            <div className="suggesting-spinner" />
+            <span>AI analyserar kvittot...</span>
+          </div>
+        )}
+
         <h2 className="modal-title">Bokför kvitto</h2>
 
         <input
-          className="title-input"
+          ref={titleRef}
+          className={`title-input${suggesting ? " suggesting-blur" : ""}${titlePulse ? " title-input--pulse" : ""}`}
           type="text"
-          placeholder="Titel"
+          placeholder="Inköp"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onAnimationEnd={() => setTitlePulse(false)}
         />
 
         <input
-          className="date-input"
+          className={`date-input${suggesting ? " suggesting-blur" : ""}`}
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
@@ -73,7 +99,7 @@ function AccountingModal({
           />
         )}
 
-        <div className="journal-grid">
+        <div className={`journal-grid${suggesting ? " suggesting-blur" : ""}`}>
           {items.map((item, index) => (
             <div
               key={index}
@@ -151,14 +177,17 @@ function AccountingModal({
           </div>
         </div>
 
-        <div className="modal-actions">
-          <button className="modal-button modal-button-secondary" onClick={onClose}>
+        <div className={`modal-actions${suggesting ? " suggesting-blur" : ""}`}>
+          <button
+            className="modal-button modal-button-secondary"
+            onClick={onClose}
+          >
             Avbryt
           </button>
           <button
             className="modal-button modal-button-primary"
             onClick={handleSubmit}
-            disabled={!isBalanced || loading}
+            disabled={!isBalanced || loading || suggesting}
           >
             {loading ? "Bokför..." : "Bokför"}
           </button>

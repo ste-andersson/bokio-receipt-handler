@@ -1,3 +1,19 @@
+.title-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(102, 117, 61, 0.5);
+  border-radius: 4px;
+}
+
+@keyframes title-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(102, 117, 61, 0.5); }
+  40%  { box-shadow: 0 0 0 6px rgba(102, 117, 61, 0.2); }
+  100% { box-shadow: 0 0 0 8px rgba(102, 117, 61, 0); }
+}
+
+.title-input--pulse {
+  animation: title-pulse 1.2s ease-out forwards;
+}
+
 .title-input {
   display: block;
   width: 100%;
@@ -129,4 +145,43 @@
   text-align: center;
   font-size: 1.5rem;
   color: #a0533a;
+}
+
+.suggesting-wrapper {
+  position: relative;
+}
+
+.suggesting-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 -2rem 1.25rem;
+  padding: 0.75rem 2rem;
+  background: #faf8f3;
+  border-bottom: 1px solid #e8e1d5;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.suggesting-blur {
+  filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.suggesting-spinner {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #d4ccbe;
+  border-top-color: #a0533a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
