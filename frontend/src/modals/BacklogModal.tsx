@@ -34,11 +34,12 @@ function BacklogThumbnail({
   onClick: (file: File, uploadId: string) => void;
 }) {
   const queryClient = useQueryClient();
+  const authFetch = useAuthFetch();
 
   const { data: buffer } = useQuery({
     queryKey: ["backlog-image", item.id],
     queryFn: () =>
-      fetch(`${API_BASE_URL}/api/backlog/${item.id}/image`, {
+      authFetch(`${API_BASE_URL}/api/backlog/${item.id}/image`, {
         headers: {
           "X-Bokio-Token": token,
           "X-Bokio-Company-Id": companyId,
@@ -100,7 +101,7 @@ function BacklogModal({
   const { data: items = [], isLoading: isLoadingItems } = useQuery({
     queryKey: ["backlog-items", companyId],
     queryFn: () =>
-      fetch(`${API_BASE_URL}/api/backlog`, {
+      authFetch(`${API_BASE_URL}/api/backlog`, {
         headers: {
           "X-Bokio-Token": token,
           "X-Bokio-Company-Id": companyId,

@@ -27,7 +27,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     setVerifyStatus("loading");
     setCompanyName("");
     try {
-      const res = await fetch(`${API_BASE_URL}/api/bokio/company`, {
+      const res = await authFetch(`${API_BASE_URL}/api/bokio/company`, {
         headers: {
           "X-Bokio-Token": tkn,
           "X-Bokio-Company-Id": cid,

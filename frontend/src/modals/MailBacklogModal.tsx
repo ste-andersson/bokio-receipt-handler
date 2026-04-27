@@ -33,11 +33,12 @@ function MailReceiptThumbnail({
   onClick: (file: File) => void;
 }) {
   const queryClient = useQueryClient();
+  const authFetch = useAuthFetch();
 
   const { data: buffer } = useQuery({
     queryKey: ["receipt-image", item.id],
     queryFn: () =>
-      fetch(`${API_BASE_URL}/api/receipts/${item.id}/image`, {
+      authFetch(`${API_BASE_URL}/api/receipts/${item.id}/image`, {
         headers: { "X-Bokio-Company-Id": companyId },
       }).then((res) => res.arrayBuffer()),
     staleTime: Infinity,
@@ -95,7 +96,7 @@ function MailBacklogModal({
   const { data: items = [], isLoading: isLoadingItems } = useQuery({
     queryKey: ["receipt-items", companyId],
     queryFn: () =>
-      fetch(`${API_BASE_URL}/api/receipts`, {
+      authFetch(`${API_BASE_URL}/api/receipts`, {
         headers: { "X-Bokio-Company-Id": companyId },
       }).then((res) => res.json()),
     enabled: !!companyId,
