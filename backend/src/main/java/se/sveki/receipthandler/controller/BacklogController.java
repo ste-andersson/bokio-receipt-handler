@@ -8,7 +8,7 @@ import se.sveki.receipthandler.service.BacklogService;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/backlog")
 public class BacklogController {

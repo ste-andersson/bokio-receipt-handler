@@ -9,7 +9,7 @@ import se.sveki.receipthandler.service.UserService;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

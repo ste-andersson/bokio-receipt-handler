@@ -10,7 +10,7 @@ import se.sveki.receipthandler.service.AccountingService;
 import se.sveki.receipthandler.service.AiService;
 import se.sveki.receipthandler.service.UserService;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/accounting")
 public class AccountingController {
