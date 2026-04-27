@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/receipts")
 public class ReceiptController {

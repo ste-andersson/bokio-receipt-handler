@@ -1,5 +1,5 @@
-import { useUser, SignInButton, UserButton } from "@clerk/react";
-import { useEffect, useState } from "react";
+import { useUser, useAuth, SignInButton, UserButton } from "@clerk/react";
+import { useState } from "react";
 import CameraButton from "./components/CameraButton";
 import AccountingModal from "./modals/AccountingModal";
 import SettingsModal from "./modals/SettingsModal";
@@ -9,27 +9,27 @@ import logo from "./assets/logo-tekont.png";
 import logomini from "./assets/logo-symbol.png";
 import BacklogModal from "./modals/BacklogModal";
 import MailBacklogModal from "./modals/MailBacklogModal";
+import { useAuthFetch } from "./hooks/useAuthFetch";
 
 function StartPage() {
   const { user, isLoaded } = useUser();
+  const { isSignedIn } = useAuth();
+  const authFetch = useAuthFetch();
   const [image, setImage] = useState<File | null>(null);
   const [uploadId, setUploadId] = useState<string | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const clerkUserId = user?.id ?? "";
   const [backlogOpen, setBacklogOpen] = useState(false);
   const [mailBacklogOpen, setMailBacklogOpen] = useState(false);
+  const [hasSynced, setHasSynced] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    fetch(`${API_BASE_URL}/api/users/sync`, {
+  if (isLoaded && isSignedIn && user && !hasSynced) {
+    setHasSynced(true);
+    authFetch(`${API_BASE_URL}/api/users/sync`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        clerkUserId: user.id,
-        email: user.primaryEmailAddress?.emailAddress,
-      }),
+      body: JSON.stringify({ email: user.primaryEmailAddress?.emailAddress }),
     });
-  }, [user]);
+  }
 
   if (!isLoaded) return null;
 
@@ -87,7 +87,6 @@ function StartPage() {
       {image && (
         <AccountingModal
           image={image}
-          clerkUserId={clerkUserId}
           uploadId={uploadId}
           onClose={() => {
             setImage(null);
@@ -96,14 +95,10 @@ function StartPage() {
         />
       )}
       {settingsOpen && (
-        <SettingsModal
-          clerkUserId={clerkUserId}
-          onClose={() => setSettingsOpen(false)}
-        />
+        <SettingsModal onClose={() => setSettingsOpen(false)} />
       )}
       {backlogOpen && (
         <BacklogModal
-          clerkUserId={clerkUserId}
           onClose={() => setBacklogOpen(false)}
           onImageSelect={(file: File, id: string) => {
             setUploadId(id);
@@ -114,7 +109,6 @@ function StartPage() {
       )}
       {mailBacklogOpen && (
         <MailBacklogModal
-          clerkUserId={clerkUserId}
           onClose={() => setMailBacklogOpen(false)}
           onImageSelect={(file: File) => {
             setImage(file);

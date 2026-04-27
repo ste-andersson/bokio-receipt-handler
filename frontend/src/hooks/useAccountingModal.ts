@@ -4,6 +4,8 @@ import { compressImage } from "../utils/compressImage";
 import { parseAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import accounts from "../data/accounts";
 import { API_BASE_URL } from "../config/api";
+import { useAuthFetch } from "./useAuthFetch";
+import { useUser } from "@clerk/react";
 
 export interface JournalItem {
   account: string;
@@ -26,10 +28,11 @@ function buildAccountPlan(): string {
 
 export function useAccountingModal(
   image: File,
-  clerkUserId: string,
   onClose: () => void,
   uploadId?: string,
 ) {
+  const authFetch = useAuthFetch();
+  const { user } = useUser();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [items, setItems] = useState<JournalItem[]>(initialItems);
@@ -39,15 +42,13 @@ export function useAccountingModal(
 
   const hasAnalyzed = useRef(false);
   const imageRef = useRef(image);
-  const clerkUserIdRef = useRef(clerkUserId);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/users/settings`, {
-      headers: { "X-Clerk-User-Id": clerkUserId },
-    })
+    authFetch(`${API_BASE_URL}/api/users/settings`)
       .then((res) => res.json())
       .then((data) => setCompanyId(data.companyId ?? ""));
-  }, [clerkUserId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   useEffect(() => {
     const analyze = async () => {
@@ -60,9 +61,8 @@ export function useAccountingModal(
         formData.append("image", compressed, "receipt.jpg");
         formData.append("accountPlan", buildAccountPlan());
 
-        const response = await fetch(`${API_BASE_URL}/api/accounting/analyze`, {
+        const response = await authFetch(`${API_BASE_URL}/api/accounting/analyze`, {
           method: "POST",
-          headers: { "X-Clerk-User-Id": clerkUserIdRef.current },
           body: formData,
         });
 
@@ -95,6 +95,7 @@ export function useAccountingModal(
     };
 
     analyze();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const activeItems = items.filter((item) => !item.placeholder);
@@ -165,14 +166,13 @@ export function useAccountingModal(
         image.type === "application/pdf" ? "receipt.pdf" : "receipt.jpg",
       );
 
-      const response = await fetch(
+      const response = await authFetch(
         `${API_BASE_URL}/api/accounting/submit-receipt`,
         {
           method: "POST",
           headers: {
             "X-Bokio-Token": token,
             "X-Bokio-Company-Id": companyId,
-            "X-Clerk-User-Id": clerkUserId,
           },
           body: formData,
         },

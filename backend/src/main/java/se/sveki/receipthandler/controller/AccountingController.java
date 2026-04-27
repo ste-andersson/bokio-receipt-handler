@@ -1,6 +1,8 @@
 package se.sveki.receipthandler.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import se.sveki.receipthandler.model.AiProvider;
@@ -10,7 +12,6 @@ import se.sveki.receipthandler.service.AccountingService;
 import se.sveki.receipthandler.service.AiService;
 import se.sveki.receipthandler.service.UserService;
 
-@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/accounting")
 public class AccountingController {
@@ -33,9 +34,9 @@ public class AccountingController {
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestHeader("X-Bokio-Token") String token,
             @RequestHeader("X-Bokio-Company-Id") String companyId,
-            @RequestHeader("X-Clerk-User-Id") String clerkUserId
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        accountingService.submitReceipt(request, image, token, companyId, clerkUserId);
+        accountingService.submitReceipt(request, image, token, companyId, jwt.getSubject());
         return ResponseEntity.ok().build();
     }
 
@@ -43,9 +44,9 @@ public class AccountingController {
     public ResponseEntity<AccountingSuggestion> analyze(
             @RequestPart("image") MultipartFile image,
             @RequestPart("accountPlan") String accountPlan,
-            @RequestHeader("X-Clerk-User-Id") String clerkUserId
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        var user = userService.getSettings(clerkUserId);
+        var user = userService.getSettings(jwt.getSubject());
         if (user.getAiProvider() == AiProvider.OFF) {
             return ResponseEntity.noContent().build();
         }

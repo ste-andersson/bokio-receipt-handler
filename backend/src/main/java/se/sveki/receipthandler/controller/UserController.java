@@ -1,6 +1,8 @@
 package se.sveki.receipthandler.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.sveki.receipthandler.model.UserEntity;
 import se.sveki.receipthandler.model.request.UserSettingsRequest;
@@ -9,7 +11,6 @@ import se.sveki.receipthandler.service.UserService;
 
 import java.util.List;
 
-@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -21,29 +22,28 @@ public class UserController {
     }
 
     @GetMapping(path = {"/", ""})
-    ResponseEntity<List<UserEntity>> getAllPlayers() {
+    ResponseEntity<List<UserEntity>> getAllUsers() {
         return ResponseEntity.ok(service.getAllUsers());
     }
 
     @GetMapping("/settings")
-    public ResponseEntity<UserEntity> getSettings(
-            @RequestHeader("X-Clerk-User-Id") String clerkUserId) {
-        return ResponseEntity.ok(service.getSettings(clerkUserId));
+    public ResponseEntity<UserEntity> getSettings(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(service.getSettings(jwt.getSubject()));
     }
 
     @PutMapping("/settings")
     public ResponseEntity<Void> updateSettings(
-            @RequestHeader ("X-Clerk-User-Id") String clerkUserId,
+            @AuthenticationPrincipal Jwt jwt,
             @RequestBody UserSettingsRequest request) {
-        service.updateSettings(clerkUserId, request);
+        service.updateSettings(jwt.getSubject(), request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/sync")
-    public ResponseEntity<UserEntity> syncUser(@RequestBody UserSyncRequest request) {
-        UserEntity user = service.syncUser(request.getClerkUserId(), request.getEmail());
+    public ResponseEntity<UserEntity> syncUser(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody UserSyncRequest request) {
+        UserEntity user = service.syncUser(jwt.getSubject(), request.getEmail());
         return ResponseEntity.ok(user);
     }
-
 }
-

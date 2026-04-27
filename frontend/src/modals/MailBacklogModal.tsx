@@ -1,11 +1,13 @@
 import { useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@clerk/react";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import "./Modal.css";
 import "./BacklogModal.css";
 import { API_BASE_URL } from "../config/api";
+import { useAuthFetch } from "../hooks/useAuthFetch";
 
 interface ReceiptItem {
   id: number;
@@ -74,18 +76,17 @@ function MailReceiptThumbnail({
 function MailBacklogModal({
   onClose,
   onImageSelect,
-  clerkUserId,
 }: {
   onClose: () => void;
   onImageSelect: (file: File) => void;
-  clerkUserId: string;
 }) {
+  const { user } = useUser();
+  const authFetch = useAuthFetch();
+
   const { data: settings } = useQuery({
-    queryKey: ["user-settings", clerkUserId],
+    queryKey: ["user-settings", user?.id],
     queryFn: () =>
-      fetch(`${API_BASE_URL}/api/users/settings`, {
-        headers: { "X-Clerk-User-Id": clerkUserId },
-      }).then((res) => res.json()),
+      authFetch(`${API_BASE_URL}/api/users/settings`).then((res) => res.json()),
     staleTime: 5 * 60 * 1000,
   });
 

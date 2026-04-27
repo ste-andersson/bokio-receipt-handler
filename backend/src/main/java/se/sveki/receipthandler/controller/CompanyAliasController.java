@@ -1,6 +1,8 @@
 package se.sveki.receipthandler.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.sveki.receipthandler.model.CompanyAliasEntity;
 import se.sveki.receipthandler.service.CompanyAliasService;
@@ -8,7 +10,6 @@ import se.sveki.receipthandler.service.CompanyAliasService;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/companyalias")
 public class CompanyAliasController {
@@ -20,10 +21,8 @@ public class CompanyAliasController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Map<String, String>>> getCompanyAliases(
-            @RequestHeader("X-Clerk-User-Id") String clerkUserId
-    ) {
-        List<Map<String, String>> result = companyAliasService.getCompanyAliasesByClerkUserId(clerkUserId)
+    public ResponseEntity<List<Map<String, String>>> getCompanyAliases(@AuthenticationPrincipal Jwt jwt) {
+        List<Map<String, String>> result = companyAliasService.getCompanyAliasesByClerkUserId(jwt.getSubject())
                 .stream()
                 .map(a -> Map.of("companyAlias", a.getCompanyAlias()))
                 .toList();
@@ -32,20 +31,20 @@ public class CompanyAliasController {
 
     @PostMapping
     public ResponseEntity<Map<String, String>> createCompanyAlias(
-            @RequestHeader("X-Clerk-User-Id") String clerkUserId,
+            @AuthenticationPrincipal Jwt jwt,
             @RequestBody Map<String, String> body
     ) {
         String companyAlias = body.get("companyAlias");
-        CompanyAliasEntity created = companyAliasService.createCompanyAlias(companyAlias, clerkUserId);
+        CompanyAliasEntity created = companyAliasService.createCompanyAlias(companyAlias, jwt.getSubject());
         return ResponseEntity.ok(Map.of("companyAlias", created.getCompanyAlias()));
     }
 
     @DeleteMapping("/{companyAlias}")
     public ResponseEntity<Void> deleteCompanyAlias(
             @PathVariable String companyAlias,
-            @RequestHeader("X-Clerk-User-Id") String clerkUserId
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        companyAliasService.deleteCompanyAlias(companyAlias, clerkUserId);
+        companyAliasService.deleteCompanyAlias(companyAlias, jwt.getSubject());
         return ResponseEntity.ok().build();
     }
 }

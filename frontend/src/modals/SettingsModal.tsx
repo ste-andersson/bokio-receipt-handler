@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/react";
 import "./Modal.css";
 import "./SettingsModal.css";
 import { API_BASE_URL } from "../config/api";
+import { useAuthFetch } from "../hooks/useAuthFetch";
 
 type VerifyStatus = "idle" | "loading" | "success" | "error";
 
-function SettingsModal({
-  onClose,
-  clerkUserId,
-}: {
-  onClose: () => void;
-  clerkUserId: string;
-}) {
+function SettingsModal({ onClose }: { onClose: () => void }) {
+  const { user } = useUser();
+  const authFetch = useAuthFetch();
   const [companyId, setCompanyId] = useState("");
   const [customPrompt, setCustomPrompt] = useState("");
   const [token, setToken] = useState(localStorage.getItem("bokioToken") ?? "");
@@ -48,9 +46,7 @@ function SettingsModal({
   };
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/users/settings`, {
-      headers: { "X-Clerk-User-Id": clerkUserId },
-    })
+    authFetch(`${API_BASE_URL}/api/users/settings`)
       .then((res) => res.json())
       .then((data) => {
         const cid = data.companyId ?? "";
@@ -61,16 +57,15 @@ function SettingsModal({
         if (cid && tkn) verifyCompany(tkn, cid);
       });
 
-    fetch(`${API_BASE_URL}/api/companyalias`, {
-      headers: { "X-Clerk-User-Id": clerkUserId },
-    })
+    authFetch(`${API_BASE_URL}/api/companyalias`)
       .then((res) => res.json())
       .then((data) =>
         setCompanyAliases(
           data.map((a: { companyAlias: string }) => a.companyAlias),
         ),
       );
-  }, [clerkUserId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleTokenBlur = () => {
     const trimmed = token.trim();
@@ -84,12 +79,9 @@ function SettingsModal({
 
   const handleSave = async () => {
     localStorage.setItem("bokioToken", token);
-    await fetch(`${API_BASE_URL}/api/users/settings`, {
+    await authFetch(`${API_BASE_URL}/api/users/settings`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Clerk-User-Id": clerkUserId,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ companyId, customPrompt, aiProvider }),
     });
     onClose();
@@ -97,12 +89,9 @@ function SettingsModal({
 
   const handleAddCompanyAlias = async () => {
     if (!newCompanyAlias.trim()) return;
-    await fetch(`${API_BASE_URL}/api/companyalias`, {
+    await authFetch(`${API_BASE_URL}/api/companyalias`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Clerk-User-Id": clerkUserId,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         companyAlias: newCompanyAlias.trim().toLowerCase(),
       }),
@@ -115,9 +104,8 @@ function SettingsModal({
   };
 
   const handleDeleteCompanyAlias = async (companyAlias: string) => {
-    await fetch(`${API_BASE_URL}/api/companyalias/${companyAlias}`, {
+    await authFetch(`${API_BASE_URL}/api/companyalias/${companyAlias}`, {
       method: "DELETE",
-      headers: { "X-Clerk-User-Id": clerkUserId },
     });
     setCompanyAliases(companyAliases.filter((a) => a !== companyAlias));
   };

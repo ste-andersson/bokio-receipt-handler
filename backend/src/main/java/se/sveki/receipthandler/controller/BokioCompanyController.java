@@ -6,7 +6,6 @@ import se.sveki.receipthandler.model.bokio.BokioCompanyInfo;
 import se.sveki.receipthandler.model.response.CompanyInfoResponse;
 import se.sveki.receipthandler.service.BokioCompanyService;
 
-@CrossOrigin(origins = {"https://app.tekont.se", "https://receipt-handler.up.railway.app", "http://localhost:5173"})
 @RestController
 @RequestMapping("/api/bokio")
 public class BokioCompanyController {

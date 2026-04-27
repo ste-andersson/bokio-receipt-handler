@@ -12,12 +12,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 function AccountingModal({
   image,
   onClose,
-  clerkUserId,
   uploadId,
 }: {
   image: File;
   onClose: () => void;
-  clerkUserId: string;
   uploadId?: string;
 }) {
   const {
@@ -34,7 +32,7 @@ function AccountingModal({
     activateRow,
     handleRowBlur,
     handleSubmit,
-  } = useAccountingModal(image, clerkUserId, onClose, uploadId);
+  } = useAccountingModal(image, onClose, uploadId);
 
   return (
     <div className="modal-overlay">
