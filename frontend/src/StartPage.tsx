@@ -17,6 +17,7 @@ function StartPage() {
   const authFetch = useAuthFetch();
   const [image, setImage] = useState<File | null>(null);
   const [uploadId, setUploadId] = useState<string | undefined>(undefined);
+  const [mailReceiptId, setMailReceiptId] = useState<number | undefined>(undefined);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [backlogOpen, setBacklogOpen] = useState(false);
   const [mailBacklogOpen, setMailBacklogOpen] = useState(false);
@@ -88,9 +89,11 @@ function StartPage() {
         <AccountingModal
           image={image}
           uploadId={uploadId}
+          mailReceiptId={mailReceiptId}
           onClose={() => {
             setImage(null);
             setUploadId(undefined);
+            setMailReceiptId(undefined);
           }}
         />
       )}
@@ -110,7 +113,9 @@ function StartPage() {
       {mailBacklogOpen && (
         <MailBacklogModal
           onClose={() => setMailBacklogOpen(false)}
-          onImageSelect={(file: File) => {
+          onImageSelect={(file: File, receiptId: number) => {
+            setUploadId(undefined);
+            setMailReceiptId(receiptId);
             setImage(file);
             setMailBacklogOpen(false);
           }}

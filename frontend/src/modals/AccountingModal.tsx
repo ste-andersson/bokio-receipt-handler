@@ -14,10 +14,12 @@ function AccountingModal({
   image,
   onClose,
   uploadId,
+  mailReceiptId,
 }: {
   image: File;
   onClose: () => void;
   uploadId?: string;
+  mailReceiptId?: number;
 }) {
   const {
     title,
@@ -34,7 +36,7 @@ function AccountingModal({
     activateRow,
     handleRowBlur,
     handleSubmit,
-  } = useAccountingModal(image, onClose, uploadId);
+  } = useAccountingModal(image, onClose, uploadId, mailReceiptId);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const wasSuggesting = useRef(false);

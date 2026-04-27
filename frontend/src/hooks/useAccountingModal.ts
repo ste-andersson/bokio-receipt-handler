@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { compressImage } from "../utils/compressImage";
 import { parseAmount, formatAmountOnBlur } from "../utils/formatAmount";
@@ -30,8 +31,10 @@ export function useAccountingModal(
   image: File,
   onClose: () => void,
   uploadId?: string,
+  mailReceiptId?: number,
 ) {
   const authFetch = useAuthFetch();
+  const queryClient = useQueryClient();
   const { user } = useUser();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -179,6 +182,14 @@ export function useAccountingModal(
       );
 
       if (!response.ok) throw new Error("Bokföring misslyckades");
+
+      if (mailReceiptId !== undefined) {
+        await authFetch(`${API_BASE_URL}/api/receipts/${mailReceiptId}`, {
+          method: "DELETE",
+          headers: { "X-Bokio-Company-Id": companyId },
+        });
+        queryClient.invalidateQueries({ queryKey: ["receipt-items", companyId] });
+      }
 
       toast.success("Kvitto bokfört!");
       onClose();

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -30,7 +30,7 @@ function MailReceiptThumbnail({
 }: {
   item: ReceiptItem;
   companyId: string;
-  onClick: (file: File) => void;
+  onClick: (file: File, receiptId: number) => void;
 }) {
   const queryClient = useQueryClient();
   const authFetch = useAuthFetch();
@@ -44,6 +44,17 @@ function MailReceiptThumbnail({
     staleTime: Infinity,
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: () =>
+      authFetch(`${API_BASE_URL}/api/receipts/${item.id}`, {
+        method: "DELETE",
+        headers: { "X-Bokio-Company-Id": companyId },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["receipt-items", companyId] });
+    },
+  });
+
   // Base64 data URL avoids blob URL lifecycle issues (no cleanup, no Strict Mode revocation)
   const imageUrl = useMemo(() => {
     if (!buffer || item.contentType === "application/pdf") return null;
@@ -55,21 +66,35 @@ function MailReceiptThumbnail({
     if (!cached) return;
     const blob = new Blob([cached], { type: item.contentType });
     const file = new File([blob], item.originalFilename, { type: item.contentType });
-    onClick(file);
+    onClick(file, item.id);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteMutation.mutate();
   };
 
   return (
-    <div className="backlog-thumbnail" onClick={handleClick}>
-      {buffer && item.contentType === "application/pdf" ? (
-        // slice(0) gives pdfjs a fresh copy to transfer — keeps the cached buffer intact
-        <Document file={{ data: buffer.slice(0) }}>
-          <Page pageNumber={1} width={150} />
-        </Document>
-      ) : imageUrl ? (
-        <img src={imageUrl} alt="Kvitto" />
-      ) : (
-        <div className="backlog-thumbnail-placeholder">Laddar...</div>
-      )}
+    <div className="backlog-item">
+      <div className="backlog-thumbnail" onClick={handleClick}>
+        {buffer && item.contentType === "application/pdf" ? (
+          // slice(0) gives pdfjs a fresh copy to transfer — keeps the cached buffer intact
+          <Document file={{ data: buffer.slice(0) }}>
+            <Page pageNumber={1} width={150} />
+          </Document>
+        ) : imageUrl ? (
+          <img src={imageUrl} alt="Kvitto" />
+        ) : (
+          <div className="backlog-thumbnail-placeholder">Laddar...</div>
+        )}
+      </div>
+      <button
+        className="backlog-item-delete"
+        onClick={handleDelete}
+        disabled={deleteMutation.isPending}
+      >
+        {deleteMutation.isPending ? "Raderar..." : "Radera"}
+      </button>
     </div>
   );
 }
@@ -79,7 +104,7 @@ function MailBacklogModal({
   onImageSelect,
 }: {
   onClose: () => void;
-  onImageSelect: (file: File) => void;
+  onImageSelect: (file: File, receiptId: number) => void;
 }) {
   const { user } = useUser();
   const authFetch = useAuthFetch();
@@ -105,8 +130,8 @@ function MailBacklogModal({
 
   const loading = !settings || isLoadingItems;
 
-  const handleSelect = (file: File) => {
-    onImageSelect(file);
+  const handleSelect = (file: File, receiptId: number) => {
+    onImageSelect(file, receiptId);
     onClose();
   };
 
