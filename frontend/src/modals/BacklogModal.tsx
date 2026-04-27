@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import "./Modal.css";
 import "./BacklogModal.css";
 import { API_BASE_URL } from "../config/api";
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface BacklogItem {
   id: string;
@@ -14,63 +13,57 @@ interface BacklogItem {
   description: string | null;
 }
 
+function toBase64DataUrl(buffer: ArrayBuffer, contentType: string): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return `data:${contentType};base64,${btoa(binary)}`;
+}
+
 function BacklogThumbnail({
   item,
   token,
   companyId,
   onClick,
-  index,
 }: {
   item: BacklogItem;
   token: string;
   companyId: string;
   onClick: (file: File, uploadId: string) => void;
-  index: number;
 }) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [pdfData, setPdfData] = useState<ArrayBuffer | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const { data: buffer } = useQuery({
+    queryKey: ["backlog-image", item.id],
+    queryFn: () =>
       fetch(`${API_BASE_URL}/api/backlog/${item.id}/image`, {
         headers: {
           "X-Bokio-Token": token,
           "X-Bokio-Company-Id": companyId,
         },
-      })
-        .then((res) => res.arrayBuffer())
-        .then((buffer) => {
-          if (item.contentType === "application/pdf") {
-            setPdfData(buffer);
-          } else {
-            const blob = new Blob([buffer], { type: item.contentType });
-            setImageUrl(URL.createObjectURL(blob));
-          }
-        });
-    }, index * 600);
+      }).then((res) => res.arrayBuffer()),
+    staleTime: Infinity,
+  });
 
-    return () => clearTimeout(timer);
-  }, [item, token, companyId, index]);
+  // Base64 data URL avoids blob URL lifecycle issues (no cleanup, no Strict Mode revocation)
+  const imageUrl = useMemo(() => {
+    if (!buffer || item.contentType === "application/pdf") return null;
+    return toBase64DataUrl(buffer, item.contentType);
+  }, [buffer, item.contentType]);
 
-  const handleClick = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/backlog/${item.id}/image`, {
-      headers: {
-        "X-Bokio-Token": token,
-        "X-Bokio-Company-Id": companyId,
-      },
-    });
-    const buffer = await res.arrayBuffer();
-    const blob = new Blob([buffer], { type: item.contentType });
-    const file = new File([blob], `receipt-${item.id}`, {
-      type: item.contentType,
-    });
+  const handleClick = () => {
+    const cached = queryClient.getQueryData<ArrayBuffer>(["backlog-image", item.id]);
+    if (!cached) return;
+    const blob = new Blob([cached], { type: item.contentType });
+    const file = new File([blob], `receipt-${item.id}`, { type: item.contentType });
     onClick(file, item.id);
   };
 
   return (
     <div className="backlog-thumbnail" onClick={handleClick}>
-      {pdfData ? (
-        <Document file={{ data: pdfData }}>
+      {buffer && item.contentType === "application/pdf" ? (
+        // slice(0) gives pdfjs a fresh copy to transfer — keeps the cached buffer intact
+        <Document file={{ data: buffer.slice(0) }}>
           <Page pageNumber={1} width={150} />
         </Document>
       ) : imageUrl ? (
@@ -91,29 +84,33 @@ function BacklogModal({
   onImageSelect: (file: File, uploadId: string) => void;
   clerkUserId: string;
 }) {
-  const [items, setItems] = useState<BacklogItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("bokioToken") ?? "";
-  const [companyId, setCompanyId] = useState("");
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/users/settings`, {
-      headers: { "X-Clerk-User-Id": clerkUserId },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setCompanyId(data.companyId ?? "");
-        return fetch(`${API_BASE_URL}/api/backlog`, {
-          headers: {
-            "X-Bokio-Token": token,
-            "X-Bokio-Company-Id": data.companyId ?? "",
-          },
-        });
-      })
-      .then((res) => res.json())
-      .then((data) => setItems(data))
-      .finally(() => setLoading(false));
-  }, [clerkUserId, token]);
+  const { data: settings } = useQuery({
+    queryKey: ["user-settings", clerkUserId],
+    queryFn: () =>
+      fetch(`${API_BASE_URL}/api/users/settings`, {
+        headers: { "X-Clerk-User-Id": clerkUserId },
+      }).then((res) => res.json()),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const companyId = settings?.companyId ?? "";
+
+  const { data: items = [], isLoading: isLoadingItems } = useQuery({
+    queryKey: ["backlog-items", companyId],
+    queryFn: () =>
+      fetch(`${API_BASE_URL}/api/backlog`, {
+        headers: {
+          "X-Bokio-Token": token,
+          "X-Bokio-Company-Id": companyId,
+        },
+      }).then((res) => res.json()),
+    enabled: !!companyId,
+    staleTime: 60 * 1000,
+  });
+
+  const loading = !settings || isLoadingItems;
 
   const handleSelect = (file: File, uploadId: string) => {
     onImageSelect(file, uploadId);
@@ -133,14 +130,13 @@ function BacklogModal({
           <p className="backlog-empty">Inga obokförda kvitton hittades.</p>
         ) : (
           <div className="backlog-grid">
-            {items.map((item, index) => (
+            {items.map((item: BacklogItem) => (
               <BacklogThumbnail
                 key={item.id}
                 item={item}
                 token={token}
                 companyId={companyId}
                 onClick={handleSelect}
-                index={index}
               />
             ))}
           </div>

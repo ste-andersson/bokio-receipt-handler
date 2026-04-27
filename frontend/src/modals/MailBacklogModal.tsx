@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import "./Modal.css";
 import "./BacklogModal.css";
 import { API_BASE_URL } from "../config/api";
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface ReceiptItem {
   id: number;
@@ -15,55 +14,52 @@ interface ReceiptItem {
   receivedAt: string;
 }
 
+function toBase64DataUrl(buffer: ArrayBuffer, contentType: string): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return `data:${contentType};base64,${btoa(binary)}`;
+}
+
 function MailReceiptThumbnail({
   item,
   companyId,
   onClick,
-  index,
 }: {
   item: ReceiptItem;
   companyId: string;
   onClick: (file: File) => void;
-  index: number;
 }) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [pdfData, setPdfData] = useState<ArrayBuffer | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const { data: buffer } = useQuery({
+    queryKey: ["receipt-image", item.id],
+    queryFn: () =>
       fetch(`${API_BASE_URL}/api/receipts/${item.id}/image`, {
         headers: { "X-Bokio-Company-Id": companyId },
-      })
-        .then((res) => res.arrayBuffer())
-        .then((buffer) => {
-          if (item.contentType === "application/pdf") {
-            setPdfData(buffer);
-          } else {
-            const blob = new Blob([buffer], { type: item.contentType });
-            setImageUrl(URL.createObjectURL(blob));
-          }
-        });
-    }, index * 300);
+      }).then((res) => res.arrayBuffer()),
+    staleTime: Infinity,
+  });
 
-    return () => clearTimeout(timer);
-  }, [item, companyId, index]);
+  // Base64 data URL avoids blob URL lifecycle issues (no cleanup, no Strict Mode revocation)
+  const imageUrl = useMemo(() => {
+    if (!buffer || item.contentType === "application/pdf") return null;
+    return toBase64DataUrl(buffer, item.contentType);
+  }, [buffer, item.contentType]);
 
-  const handleClick = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/receipts/${item.id}/image`, {
-      headers: { "X-Bokio-Company-Id": companyId },
-    });
-    const buffer = await res.arrayBuffer();
-    const blob = new Blob([buffer], { type: item.contentType });
-    const file = new File([blob], item.originalFilename, {
-      type: item.contentType,
-    });
+  const handleClick = () => {
+    const cached = queryClient.getQueryData<ArrayBuffer>(["receipt-image", item.id]);
+    if (!cached) return;
+    const blob = new Blob([cached], { type: item.contentType });
+    const file = new File([blob], item.originalFilename, { type: item.contentType });
     onClick(file);
   };
 
   return (
     <div className="backlog-thumbnail" onClick={handleClick}>
-      {pdfData ? (
-        <Document file={{ data: pdfData }}>
+      {buffer && item.contentType === "application/pdf" ? (
+        // slice(0) gives pdfjs a fresh copy to transfer — keeps the cached buffer intact
+        <Document file={{ data: buffer.slice(0) }}>
           <Page pageNumber={1} width={150} />
         </Document>
       ) : imageUrl ? (
@@ -84,26 +80,28 @@ function MailBacklogModal({
   onImageSelect: (file: File) => void;
   clerkUserId: string;
 }) {
-  const [items, setItems] = useState<ReceiptItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [companyId, setCompanyId] = useState("");
+  const { data: settings } = useQuery({
+    queryKey: ["user-settings", clerkUserId],
+    queryFn: () =>
+      fetch(`${API_BASE_URL}/api/users/settings`, {
+        headers: { "X-Clerk-User-Id": clerkUserId },
+      }).then((res) => res.json()),
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/users/settings`, {
-      headers: { "X-Clerk-User-Id": clerkUserId },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const id = data.companyId ?? "";
-        setCompanyId(id);
-        return fetch(`${API_BASE_URL}/api/receipts`, {
-          headers: { "X-Bokio-Company-Id": id },
-        });
-      })
-      .then((res) => res.json())
-      .then((data) => setItems(data))
-      .finally(() => setLoading(false));
-  }, [clerkUserId]);
+  const companyId = settings?.companyId ?? "";
+
+  const { data: items = [], isLoading: isLoadingItems } = useQuery({
+    queryKey: ["receipt-items", companyId],
+    queryFn: () =>
+      fetch(`${API_BASE_URL}/api/receipts`, {
+        headers: { "X-Bokio-Company-Id": companyId },
+      }).then((res) => res.json()),
+    enabled: !!companyId,
+    staleTime: 60 * 1000,
+  });
+
+  const loading = !settings || isLoadingItems;
 
   const handleSelect = (file: File) => {
     onImageSelect(file);
@@ -123,13 +121,12 @@ function MailBacklogModal({
           <p className="backlog-empty">Inga obokförda mailkvitton hittades.</p>
         ) : (
           <div className="backlog-grid">
-            {items.map((item, index) => (
+            {items.map((item: ReceiptItem) => (
               <MailReceiptThumbnail
                 key={item.id}
                 item={item}
                 companyId={companyId}
                 onClick={handleSelect}
-                index={index}
               />
             ))}
           </div>
