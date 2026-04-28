@@ -34,9 +34,11 @@
   cursor: pointer;
 }
 
-.backlog-item-delete:hover {
-  background: #faf8f3;
-  border-color: #a45d2a;
+@media (hover: hover) {
+  .backlog-item-delete:hover {
+    background: #faf8f3;
+    border-color: #a45d2a;
+  }
 }
 
 .backlog-item-delete:disabled {
@@ -50,8 +52,10 @@
   object-fit: cover;
 }
 
-.backlog-thumbnail:hover {
-  border-color: #556132;
+@media (hover: hover) {
+  .backlog-thumbnail:hover {
+    border-color: #556132;
+  }
 }
 
 .backlog-thumbnail-placeholder {

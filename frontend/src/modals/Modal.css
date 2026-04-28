@@ -137,9 +137,11 @@
     box-shadow 0.15s ease;
 }
 
-.modal-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  filter: brightness(1.02);
+@media (hover: hover) {
+  .modal-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.02);
+  }
 }
 
 .modal-button:active:not(:disabled) {
@@ -167,18 +169,20 @@
 }
 
 @keyframes sheet-up {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes overlay-in {
+  from { background: rgba(34, 34, 34, 0); backdrop-filter: blur(0px); }
+  to   { background: rgba(34, 34, 34, 0.45); backdrop-filter: blur(3px); }
 }
 
 @media (max-width: 760px) {
   .modal-overlay {
     padding: 0;
     align-items: flex-end;
+    animation: overlay-in 1.35s cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .modal-content {

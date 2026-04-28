@@ -4,6 +4,7 @@ import accounts from "../data/accounts";
 import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import { useAccountingModal } from "../hooks/useAccountingModal";
 import { useEffect, useRef, useState } from "react";
+import { useAnimatedClose } from "../hooks/useAnimatedClose";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -21,6 +22,9 @@ function AccountingModal({
   uploadId?: string;
   mailReceiptId?: number;
 }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const animatedClose = useAnimatedClose(contentRef, onClose);
+
   const {
     title,
     setTitle,
@@ -36,7 +40,7 @@ function AccountingModal({
     activateRow,
     handleRowBlur,
     handleSubmit,
-  } = useAccountingModal(image, onClose, uploadId, mailReceiptId);
+  } = useAccountingModal(image, animatedClose, uploadId, mailReceiptId);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const wasSuggesting = useRef(false);
@@ -54,7 +58,7 @@ function AccountingModal({
   }, [suggesting]);
 
   return (
-    <ModalShell onClose={onClose}>
+    <ModalShell onClose={animatedClose} contentRef={contentRef}>
         {suggesting && (
           <div className="suggesting-banner">
             <div className="suggesting-spinner" />
@@ -177,7 +181,7 @@ function AccountingModal({
         <div className={`modal-actions${suggesting ? " suggesting-blur" : ""}`}>
           <button
             className="modal-button modal-button-secondary"
-            onClick={onClose}
+            onClick={animatedClose}
           >
             Avbryt
           </button>

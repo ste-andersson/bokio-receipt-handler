@@ -5,11 +5,14 @@ import "./Modal.css";
 function ModalShell({
   children,
   onClose,
+  contentRef: externalRef,
 }: {
   children: React.ReactNode;
   onClose: () => void;
+  contentRef?: React.RefObject<HTMLDivElement | null>;
 }) {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const internalRef = useRef<HTMLDivElement>(null);
+  const contentRef = externalRef ?? internalRef;
   useSwipeToClose(contentRef, onClose);
 
   useEffect(() => {

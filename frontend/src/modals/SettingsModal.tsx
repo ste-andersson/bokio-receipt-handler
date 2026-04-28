@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useAnimatedClose } from "../hooks/useAnimatedClose";
 import { useUser } from "@clerk/react";
 import { toast } from "react-toastify";
 import "./SettingsModal.css";
@@ -25,6 +26,9 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   const [showCamera, setShowCamera] = useState(true);
   const [showBokioBacklog, setShowBokioBacklog] = useState(true);
   const [showTekontoBacklog, setShowTekontoBacklog] = useState(true);
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const animatedClose = useAnimatedClose(contentRef, onClose);
 
   const verifyCompany = async (tkn: string, cid: string) => {
     if (!tkn || !cid) return;
@@ -92,7 +96,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
       body: JSON.stringify({ companyId, customPrompt, aiProvider, showCamera, showBokioBacklog, showTekontoBacklog }),
     });
     toast.success("Inställningar sparade");
-    onClose();
+    animatedClose();
   };
 
   const handleAddCompanyAlias = async () => {
@@ -129,7 +133,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <ModalShell onClose={onClose}>
+    <ModalShell onClose={animatedClose} contentRef={contentRef}>
         <h2 className="modal-title">Inställningar</h2>
         <p className="modal-subtitle">
           Hantera integrationer och hur AI-assistenten arbetar.
@@ -273,7 +277,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         <div className="modal-actions">
           <button
             className="modal-button modal-button-secondary"
-            onClick={onClose}
+            onClick={animatedClose}
           >
             Stäng
           </button>

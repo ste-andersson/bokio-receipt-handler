@@ -80,8 +80,10 @@
   width: 100%;
 }
 
-.btn-primary:hover {
-  background: #66753d;
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: #66753d;
+  }
 }
 
 .btn-secondary {
@@ -90,8 +92,10 @@
   border: 1.5px solid #556132;
 }
 
-.btn-secondary:hover {
-  background: #eef2e3;
+@media (hover: hover) {
+  .btn-secondary:hover {
+    background: #eef2e3;
+  }
 }
 
 .btn-ghost {
@@ -100,6 +104,8 @@
   border: 1px solid #e8e1d5;
 }
 
-.btn-ghost:hover {
-  background: #f4f0e8;
+@media (hover: hover) {
+  .btn-ghost:hover {
+    background: #f4f0e8;
+  }
 }

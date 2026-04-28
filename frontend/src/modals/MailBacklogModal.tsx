@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { useAnimatedClose } from "../hooks/useAnimatedClose";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@clerk/react";
 import { Document, Page } from "react-pdf";
@@ -130,13 +131,16 @@ function MailBacklogModal({
 
   const loading = !settings || isLoadingItems;
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const animatedClose = useAnimatedClose(contentRef, onClose);
+
   const handleSelect = (file: File, receiptId: number) => {
     onImageSelect(file, receiptId);
-    onClose();
+    animatedClose();
   };
 
   return (
-    <ModalShell onClose={onClose}>
+    <ModalShell onClose={animatedClose} contentRef={contentRef}>
         <h2 className="modal-title">Mailkvitton</h2>
         {loading ? (
           <p className="backlog-loading">Hämtar kvitton...</p>
