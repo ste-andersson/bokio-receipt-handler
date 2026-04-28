@@ -42,7 +42,24 @@ function AccountingModal({
     handleSubmit,
   } = useAccountingModal(image, animatedClose, uploadId, mailReceiptId);
 
-  const titleRef = useRef<HTMLInputElement>(null);
+  const titleRef = useRef<HTMLTextAreaElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+
+  const openDatePicker = () => {
+    const el = dateRef.current;
+    if (!el) return;
+    try {
+      el.showPicker();
+    } catch {
+      el.focus();
+    }
+  };
+
+  const formattedDate = date
+    ? new Intl.DateTimeFormat("sv-SE", { dateStyle: "long" }).format(
+        new Date(date + "T12:00:00"),
+      )
+    : "";
   const wasSuggesting = useRef(false);
   const [titlePulse, setTitlePulse] = useState(false);
   const [photoExpanded, setPhotoExpanded] = useState(false);
@@ -58,6 +75,13 @@ function AccountingModal({
     }
   }, [suggesting]);
 
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }, [title]);
+
   return (
     <ModalShell onClose={animatedClose} contentRef={contentRef}>
       {suggesting && (
@@ -69,22 +93,38 @@ function AccountingModal({
 
       <h2 className="modal-title">Bokför kvitto</h2>
 
-      <input
+      <textarea
         ref={titleRef}
         className={`title-input${suggesting ? " suggesting-blur" : ""}${titlePulse ? " title-input--pulse" : ""}`}
-        type="text"
         placeholder="Inköp"
         value={title}
+        rows={1}
+        spellCheck={false}
         onChange={(e) => setTitle(e.target.value)}
         onAnimationEnd={() => setTitlePulse(false)}
       />
 
-      <input
-        className={`date-input${suggesting ? " suggesting-blur" : ""}`}
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-      />
+      <div
+        className={`date-wrapper${suggesting ? " suggesting-blur" : ""}`}
+        onClick={openDatePicker}
+      >
+        <span className="date-display">{formattedDate}</span>
+        <span className="date-calendar-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0.75" y="1.75" width="12.5" height="11.5" rx="1.5" stroke="currentColor" strokeWidth="1.25"/>
+            <line x1="0.75" y1="5.25" x2="13.25" y2="5.25" stroke="currentColor" strokeWidth="1.25"/>
+            <line x1="4" y1="0.75" x2="4" y2="3.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+            <line x1="10" y1="0.75" x2="10" y2="3.25" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
+          </svg>
+        </span>
+        <input
+          ref={dateRef}
+          className="date-input"
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+      </div>
 
       <div
         className={`receipt-photo-wrapper${photoExpanded ? " receipt-photo-wrapper--expanded" : ""}`}
