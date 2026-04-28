@@ -30,28 +30,47 @@ public class AiService {
 
     private String buildPrompt(String accountPlan, String customPrompt) {
         StringBuilder prompt = new StringBuilder("""
-                Du är en svensk bokföringsassistent. Analysera kvittot och returnera ENDAST ett JSON-objekt utan förklaring eller markdown.
-                
-                JSON-strukturen ska vara:
-                {
-                  "title": "beskrivning av köpet",
-                  "date": "YYYY-MM-DD",
-                  "items": [
-                    { "account": 1930, "debit": 0, "credit": 125.00 },
-                    { "account": 2641, "debit": 25.00, "credit": 0 },
-                    { "account": 5460, "debit": 100.00, "credit": 0 }
-                  ]
-                }
-                
-                Använd följande kontoplan:
-                
-                """);
+Du är en expert på svensk bokföring och kvittotolkning.
+
+Analysera bilden av kvittot och returnera ENDAST giltig JSON.
+Ingen markdown.
+Ingen förklaring.
+Ingen text före eller efter JSON.
+
+JSON-format:
+
+{
+  "title": "kort beskrivning av inköpet",
+  "date": "YYYY-MM-DD",
+  "items": [
+    { "account": 1930, "debit": 0.00, "credit": 125.00 },
+    { "account": 2641, "debit": 25.00, "credit": 0.00 },
+    { "account": 5460, "debit": 100.00, "credit": 0.00 }
+  ]
+}
+
+Regler:
+
+1. Läs kvittot noggrant. Använd endast information som faktiskt syns.
+2. Gissa inte datum, moms eller totalsumma.
+3. Om moms ej framgår tydligt: sätt ingen momsrad.
+4. Första raden ska vara kredit:
+   - 1930 = företagskort
+   - 2890 = privat utlägg / kontanter
+5. Därefter momsrad (2641) om tydlig avdragsgill moms finns.
+6. Därefter kostnadskonton i debet.
+7. Debet och kredit måste balansera exakt.
+8. title ska beskriva köpet kortfattat.
+9. Belopp anges med två decimaler.
+10. Om information saknas, välj rimlig konservativ bokföring.
+
+Kontoplan:
+""");
 
         prompt.append(accountPlan);
-        prompt.append("\n\nMomsen ska alltid bokföras separat. Debet och kredit måste balansera.");
 
         if (customPrompt != null && !customPrompt.isBlank()) {
-            prompt.append("\n\nExtra instruktioner från användaren:\n").append(customPrompt);
+            prompt.append("\n\nExtra instruktioner:\n").append(customPrompt);
         }
 
         return prompt.toString();
