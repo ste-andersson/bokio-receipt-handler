@@ -183,7 +183,7 @@ function AccountingModal({
             className="modal-button modal-button-secondary"
             onClick={animatedClose}
           >
-            Avbryt
+            Stäng
           </button>
           <button
             className="modal-button modal-button-primary"

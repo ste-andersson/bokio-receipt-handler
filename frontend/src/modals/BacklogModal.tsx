@@ -142,6 +142,11 @@ function BacklogModal({
             ))}
           </div>
         )}
+        <div className="modal-actions">
+          <button className="modal-button modal-button-secondary" onClick={animatedClose}>
+            Stäng
+          </button>
+        </div>
     </ModalShell>
   );
 }
