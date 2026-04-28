@@ -1,5 +1,6 @@
 import { useUser, useAuth, SignInButton, UserButton } from "@clerk/react";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const AI_PROVIDER_LABEL: Record<string, string> = {
   OPENAI: "AI: OpenAI",
@@ -40,6 +41,31 @@ function StartPage() {
   const [topbarAiProvider, setTopbarAiProvider] = useState("OPENAI");
   const [settingsCompanyId, setSettingsCompanyId] = useState("");
   const [settingsCustomPrompt, setSettingsCustomPrompt] = useState("");
+
+  const token = localStorage.getItem("bokioToken") ?? "";
+
+  const { data: bokioBacklogItems } = useQuery<unknown[]>({
+    queryKey: ["backlog-items", settingsCompanyId],
+    queryFn: () =>
+      authFetch(`${API_BASE_URL}/api/backlog`, {
+        headers: {
+          "X-Bokio-Token": token,
+          "X-Bokio-Company-Id": settingsCompanyId,
+        },
+      }).then((res) => res.json()),
+    enabled: !!settingsCompanyId && showBokioBacklog,
+    staleTime: 60 * 1000,
+  });
+
+  const { data: tekontBacklogItems } = useQuery<unknown[]>({
+    queryKey: ["receipt-items", settingsCompanyId],
+    queryFn: () =>
+      authFetch(`${API_BASE_URL}/api/receipts`, {
+        headers: { "X-Bokio-Company-Id": settingsCompanyId },
+      }).then((res) => res.json()),
+    enabled: !!settingsCompanyId && showTekontoBacklog,
+    staleTime: 60 * 1000,
+  });
 
   const loadFeatureSettings = () => {
     authFetch(`${API_BASE_URL}/api/users/settings`)
@@ -167,7 +193,7 @@ function StartPage() {
                   className="btn-secondary action-btn"
                   onClick={() => setBacklogOpen(true)}
                 >
-                  Bokio-backlog
+                  Bokio-backlog{bokioBacklogItems != null ? ` (${bokioBacklogItems.length})` : ""}
                 </button>
               )}
               {showTekontoBacklog && (
@@ -175,7 +201,7 @@ function StartPage() {
                   className="btn-secondary action-btn"
                   onClick={() => setMailBacklogOpen(true)}
                 >
-                  Tekont-backlog
+                  Tekont-backlog{tekontBacklogItems != null ? ` (${tekontBacklogItems.length})` : ""}
                 </button>
               )}
               <button
