@@ -2,6 +2,7 @@ package se.sveki.receipthandler.service;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import se.sveki.receipthandler.model.bokio.BokioImageItem;
 import se.sveki.receipthandler.model.bokio.BokioImagesResponse;
@@ -21,9 +22,12 @@ public class BacklogService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         String url = BOKIO_BASE_URL + "/v1/companies/" + companyId + "/uploads";
-        ResponseEntity<BokioImagesResponse> response = restTemplate.exchange(
-                url, HttpMethod.GET, entity, BokioImagesResponse.class
-        );
+        ResponseEntity<BokioImagesResponse> response;
+        try {
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, BokioImagesResponse.class);
+        } catch (HttpClientErrorException e) {
+            return List.of();
+        }
 
         if (response.getBody() == null || response.getBody().getItems() == null) {
             return List.of();

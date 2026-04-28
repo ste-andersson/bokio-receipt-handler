@@ -202,38 +202,48 @@ function StartPage() {
           <div className="logged-in-content">
             <img src={logo} alt="Tekont" className="hero-logo" />
             <div className="action-buttons">
-              {showCamera && (
-                <CameraButton
-                  onImageCapture={(file) => {
-                    setUploadId(undefined);
-                    setImage(file);
-                  }}
-                />
+              {bokioStatus === "connected" && (
+                <>
+                  {showCamera && (
+                    <CameraButton
+                      onImageCapture={(file) => {
+                        setUploadId(undefined);
+                        setImage(file);
+                      }}
+                    />
+                  )}
+                  {showBokioBacklog && (
+                    <button
+                      className="btn-secondary action-btn"
+                      onClick={() => setBacklogOpen(true)}
+                    >
+                      Bokio-backlog
+                      {bokioBacklogItems != null
+                        ? ` (${bokioBacklogItems.length})`
+                        : ""}
+                    </button>
+                  )}
+                  {showTekontoBacklog && (
+                    <button
+                      className="btn-secondary action-btn"
+                      onClick={() => setMailBacklogOpen(true)}
+                    >
+                      Tekont-backlog
+                      {tekontBacklogItems != null
+                        ? ` (${tekontBacklogItems.length})`
+                        : ""}
+                    </button>
+                  )}
+                </>
               )}
-              {showBokioBacklog && (
-                <button
-                  className="btn-secondary action-btn"
-                  onClick={() => setBacklogOpen(true)}
-                >
-                  Bokio-backlog
-                  {bokioBacklogItems != null
-                    ? ` (${bokioBacklogItems.length})`
-                    : ""}
-                </button>
-              )}
-              {showTekontoBacklog && (
-                <button
-                  className="btn-secondary action-btn"
-                  onClick={() => setMailBacklogOpen(true)}
-                >
-                  Tekont-backlog
-                  {tekontBacklogItems != null
-                    ? ` (${tekontBacklogItems.length})`
-                    : ""}
-                </button>
+              {bokioStatus === "missing" && (
+                <p className="setup-hint">
+                  Gå in i Inställningar nedan och fyll i ditt Bokio-ID och din
+                  Bokio-token för att använda appen.
+                </p>
               )}
               <button
-                className="btn-ghost action-btn"
+                className={`action-btn ${bokioStatus === "missing" ? "btn-primary" : "btn-ghost"}`}
                 onClick={() => setSettingsOpen(true)}
               >
                 Inställningar

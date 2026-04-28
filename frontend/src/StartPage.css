@@ -179,6 +179,14 @@
   margin: 0;
 }
 
+.setup-hint {
+  font-size: 0.9rem;
+  color: #6a6a6a;
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .action-buttons {
   display: flex;
   flex-direction: column;
@@ -196,21 +204,33 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #556132 0%, #7a8f45 100%);
+  background: #556132;
   color: white;
   border: none;
   padding: 1.1rem 2rem;
   font-size: 1rem;
   border-radius: 0.5rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
   width: 100%;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: #66753d;
+  }
+}
+
+.signin-cta .btn-primary {
+  background: linear-gradient(135deg, #556132 0%, #7a8f45 100%);
+  font-weight: 600;
   box-shadow: 0 4px 14px rgba(85, 97, 50, 0.35);
   transition: box-shadow 0.15s ease, filter 0.15s ease;
 }
 
 @media (hover: hover) {
-  .btn-primary:hover {
+  .signin-cta .btn-primary:hover {
+    background: linear-gradient(135deg, #556132 0%, #7a8f45 100%);
     filter: brightness(1.08);
     box-shadow: 0 6px 18px rgba(85, 97, 50, 0.45);
   }
