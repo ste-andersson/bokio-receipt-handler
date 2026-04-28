@@ -47,6 +47,7 @@
   font-size: 1.9rem;
   font-weight: 600;
   color: #222222;
+  letter-spacing: -0.02em;
 }
 
 .modal-subtitle {
@@ -74,9 +75,9 @@
 }
 
 .modal-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   color: #556132;
   text-transform: uppercase;
 }
@@ -171,18 +172,34 @@
 }
 
 @keyframes modal-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes sheet-up {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes overlay-in {
-  from { background: rgba(34, 34, 34, 0); backdrop-filter: blur(0px); }
-  to   { background: rgba(34, 34, 34, 0.45); backdrop-filter: blur(3px); }
+  from {
+    background: rgba(34, 34, 34, 0);
+    backdrop-filter: blur(0px);
+  }
+  to {
+    background: rgba(34, 34, 34, 0.45);
+    backdrop-filter: blur(3px);
+  }
 }
 
 @media (max-width: 760px) {
