@@ -46,7 +46,7 @@
 
 .journal-grid {
   display: grid;
-  grid-template-columns: 1fr 2px 1fr;
+  grid-template-columns: 1fr 1px 1fr;
   row-gap: 0.5rem;
   column-gap: 0.7rem;
   margin-bottom: 1.5rem;
@@ -59,6 +59,7 @@
 .t-separator {
   background: #c7bfb1;
   align-self: stretch;
+  margin-top: -0.5rem;
 }
 
 .account-label {
