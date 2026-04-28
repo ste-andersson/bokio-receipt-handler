@@ -1,5 +1,6 @@
 package se.sveki.receipthandler.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,14 +31,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Value("${cors.use-wildcard:false}")
+    private boolean useWildcard;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
-            "https://app.tekont.se",
-            "https://receipt-handler.up.railway.app",
-            "http://localhost:5173"
-        ));
+        if (useWildcard) {
+            config.addAllowedOriginPattern("*");
+        } else {
+            config.setAllowedOrigins(List.of(
+                    "https://app.tekont.se",
+                    "https://receipt-handler.up.railway.app",
+                    "http://localhost:5173"
+            ));
+        }
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

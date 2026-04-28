@@ -48,6 +48,7 @@ export function useAccountingModal(
   const imageRef = useRef(image);
 
   useEffect(() => {
+    if (!user?.id) return;
     authFetch(`${API_BASE_URL}/api/users/settings`)
       .then((res) => res.json())
       .then((data) => {
