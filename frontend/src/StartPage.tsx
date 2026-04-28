@@ -171,10 +171,32 @@ function StartPage() {
         {!user ? (
           <div className="signin-container">
             <img src={logo} alt="Tekont" className="hero-logo" />
-            <p className="signin-subtitle">Bokför kvitton. Enkelt.</p>
-            <SignInButton>
-              <button className="btn-primary">Logga in</button>
-            </SignInButton>
+            <p className="signin-subtitle">
+              Ditt kvitto. Bokfört. På sekunder.
+            </p>
+            <div className="signin-steps">
+              <span className="signin-step">Fotografera</span>
+              <span className="signin-step-arrow">→</span>
+              <span className="signin-step">Kontera</span>
+              <span className="signin-step-arrow">→</span>
+              <span className="signin-step">Klart</span>
+            </div>
+            <div className="signin-features">
+              <span>Integration med Bokio</span>
+              <span className="signin-features-dot">·</span>
+              <span>AI-assisterad kontering</span>
+              <span className="signin-features-dot">·</span>
+              <span>Kvitton via mail</span>
+            </div>
+            <div className="signin-cta">
+              <SignInButton>
+                <button className="btn-primary">Logga in</button>
+              </SignInButton>
+              <p className="signin-login-hint">
+                Logga in med ditt Google-, Apple- eller LinkedIn-konto, eller
+                registrera dig med din e-postadress.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="logged-in-content">
@@ -193,7 +215,10 @@ function StartPage() {
                   className="btn-secondary action-btn"
                   onClick={() => setBacklogOpen(true)}
                 >
-                  Bokio-backlog{bokioBacklogItems != null ? ` (${bokioBacklogItems.length})` : ""}
+                  Bokio-backlog
+                  {bokioBacklogItems != null
+                    ? ` (${bokioBacklogItems.length})`
+                    : ""}
                 </button>
               )}
               {showTekontoBacklog && (
@@ -201,7 +226,10 @@ function StartPage() {
                   className="btn-secondary action-btn"
                   onClick={() => setMailBacklogOpen(true)}
                 >
-                  Tekont-backlog{tekontBacklogItems != null ? ` (${tekontBacklogItems.length})` : ""}
+                  Tekont-backlog
+                  {tekontBacklogItems != null
+                    ? ` (${tekontBacklogItems.length})`
+                    : ""}
                 </button>
               )}
               <button
