@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import accounts from "../data/accounts";
 import "./AccountCombobox.css";
 
@@ -30,14 +31,11 @@ export function AccountCombobox({ value, onChange }: Props) {
       });
     }
     setFilter("");
-    setOpen(true);
+    flushSync(() => {
+      setOpen(true);
+    });
+    filterRef.current?.focus();
   };
-
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => filterRef.current?.focus(), 0);
-    }
-  }, [open]);
 
   useEffect(() => {
     if (!open) return;
