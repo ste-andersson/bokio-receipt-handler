@@ -45,6 +45,7 @@ function AccountingModal({
   const titleRef = useRef<HTMLInputElement>(null);
   const wasSuggesting = useRef(false);
   const [titlePulse, setTitlePulse] = useState(false);
+  const [photoExpanded, setPhotoExpanded] = useState(false);
 
   useEffect(() => {
     if (suggesting) {
@@ -85,19 +86,37 @@ function AccountingModal({
         onChange={(e) => setDate(e.target.value)}
       />
 
-      {image.type === "application/pdf" ? (
-        <Document file={image}>
-          <Page
-            pageNumber={1}
-            width={window.innerWidth > 600 ? 560 : window.innerWidth - 32}
+      <div
+        className={`receipt-photo-wrapper${photoExpanded ? " receipt-photo-wrapper--expanded" : ""}`}
+        onClick={() => { if (!photoExpanded) setPhotoExpanded(true); }}
+      >
+        {image.type === "application/pdf" ? (
+          <Document file={image}>
+            <Page
+              pageNumber={1}
+              width={window.innerWidth > 600 ? 560 : window.innerWidth - 32}
+            />
+          </Document>
+        ) : (
+          <img
+            className="receipt-photo"
+            src={URL.createObjectURL(image)}
+            alt="Kvitto"
           />
-        </Document>
-      ) : (
-        <img
-          className="receipt-photo"
-          src={URL.createObjectURL(image)}
-          alt="Kvitto"
-        />
+        )}
+        {!photoExpanded && (
+          <div className="receipt-photo-expand-overlay">
+            <span className="receipt-photo-expand-label">Visa hela kvittot</span>
+          </div>
+        )}
+      </div>
+      {photoExpanded && (
+        <button
+          className="receipt-photo-collapse"
+          onClick={() => setPhotoExpanded(false)}
+        >
+          Dölj kvittot
+        </button>
       )}
 
       <div className={`journal-grid${suggesting ? " suggesting-blur" : ""}`}>
