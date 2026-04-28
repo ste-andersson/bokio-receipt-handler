@@ -37,7 +37,7 @@ function AccountingModal({
     totalDebit,
     totalCredit,
     isBalanced,
-    activateRow,
+    addRow,
     handleRowBlur,
     handleSubmit,
   } = useAccountingModal(image, animatedClose, uploadId, mailReceiptId);
@@ -59,132 +59,128 @@ function AccountingModal({
 
   return (
     <ModalShell onClose={animatedClose} contentRef={contentRef}>
-        {suggesting && (
-          <div className="suggesting-banner">
-            <div className="suggesting-spinner" />
-            <span>AI analyserar kvittot...</span>
-          </div>
-        )}
+      {suggesting && (
+        <div className="suggesting-banner">
+          <div className="suggesting-spinner" />
+          <span>AI analyserar kvittot...</span>
+        </div>
+      )}
 
-        <h2 className="modal-title">Bokför kvitto</h2>
+      <h2 className="modal-title">Bokför kvitto</h2>
 
-        <input
-          ref={titleRef}
-          className={`title-input${suggesting ? " suggesting-blur" : ""}${titlePulse ? " title-input--pulse" : ""}`}
-          type="text"
-          placeholder="Inköp"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onAnimationEnd={() => setTitlePulse(false)}
-        />
+      <input
+        ref={titleRef}
+        className={`title-input${suggesting ? " suggesting-blur" : ""}${titlePulse ? " title-input--pulse" : ""}`}
+        type="text"
+        placeholder="Inköp"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onAnimationEnd={() => setTitlePulse(false)}
+      />
 
-        <input
-          className={`date-input${suggesting ? " suggesting-blur" : ""}`}
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-        />
+      <input
+        className={`date-input${suggesting ? " suggesting-blur" : ""}`}
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+      />
 
-        {image.type === "application/pdf" ? (
-          <Document file={image}>
-            <Page
-              pageNumber={1}
-              width={window.innerWidth > 600 ? 560 : window.innerWidth - 32}
-            />
-          </Document>
-        ) : (
-          <img
-            className="receipt-photo"
-            src={URL.createObjectURL(image)}
-            alt="Kvitto"
+      {image.type === "application/pdf" ? (
+        <Document file={image}>
+          <Page
+            pageNumber={1}
+            width={window.innerWidth > 600 ? 560 : window.innerWidth - 32}
           />
-        )}
+        </Document>
+      ) : (
+        <img
+          className="receipt-photo"
+          src={URL.createObjectURL(image)}
+          alt="Kvitto"
+        />
+      )}
 
-        <div className={`journal-grid${suggesting ? " suggesting-blur" : ""}`}>
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className={`journal-row ${item.placeholder ? "placeholder-row" : ""}`}
-              onClick={() => item.placeholder && activateRow(index)}
-              onBlur={() => handleRowBlur(index)}
-            >
-              <div className="account-label">
-                {item.placeholder ? (
-                  <span className="placeholder-text">
-                    Lägg till konto eller skriv nummer
-                  </span>
-                ) : (
-                  <AccountCombobox
-                    value={item.account}
-                    onChange={(acc) => {
-                      const updated = [...items];
-                      updated[index].account = acc;
-                      setItems(updated);
-                    }}
-                  />
-                )}
-              </div>
-              <input
-                className="debit-input"
-                type="text"
-                inputMode="decimal"
-                value={item.debit}
-                onFocus={() => item.placeholder && activateRow(index)}
-                onChange={(e) => {
+      <div className={`journal-grid${suggesting ? " suggesting-blur" : ""}`}>
+        {items.map((item, index) => (
+          <div
+            key={index}
+            className="journal-row"
+            onBlur={() => handleRowBlur(index)}
+          >
+            <div className="account-label">
+              <AccountCombobox
+                value={item.account}
+                autoFocus={item.autoFocus}
+                onChange={(acc) => {
                   const updated = [...items];
-                  updated[index].debit = formatAmount(e.target.value);
-                  setItems(updated);
-                }}
-                onBlur={(e) => {
-                  const updated = [...items];
-                  updated[index].debit = formatAmountOnBlur(e.target.value);
-                  setItems(updated);
-                }}
-              />
-              <div className="t-separator" />
-              <input
-                className="credit-input"
-                type="text"
-                inputMode="decimal"
-                value={item.credit}
-                onFocus={() => item.placeholder && activateRow(index)}
-                onChange={(e) => {
-                  const updated = [...items];
-                  updated[index].credit = formatAmount(e.target.value);
-                  setItems(updated);
-                }}
-                onBlur={(e) => {
-                  const updated = [...items];
-                  updated[index].credit = formatAmountOnBlur(e.target.value);
+                  updated[index].account = acc;
                   setItems(updated);
                 }}
               />
             </div>
-          ))}
-
-          <div className="journal-summary">
-            <span className="summary-label-debit">Debet</span>
-            <span className="summary-label-credit">Kredit</span>
-            <strong className="summary-total-debit">{totalDebit}</strong>
-            <strong className="summary-total-credit">{totalCredit}</strong>
+            <input
+              className="debit-input"
+              type="text"
+              inputMode="decimal"
+              value={item.debit}
+              onChange={(e) => {
+                const updated = [...items];
+                updated[index].debit = formatAmount(e.target.value);
+                setItems(updated);
+              }}
+              onBlur={(e) => {
+                const updated = [...items];
+                updated[index].debit = formatAmountOnBlur(e.target.value);
+                setItems(updated);
+              }}
+            />
+            <div className="t-separator" />
+            <input
+              className="credit-input"
+              type="text"
+              inputMode="decimal"
+              value={item.credit}
+              onChange={(e) => {
+                const updated = [...items];
+                updated[index].credit = formatAmount(e.target.value);
+                setItems(updated);
+              }}
+              onBlur={(e) => {
+                const updated = [...items];
+                updated[index].credit = formatAmountOnBlur(e.target.value);
+                setItems(updated);
+              }}
+            />
           </div>
-        </div>
+        ))}
 
-        <div className={`modal-actions${suggesting ? " suggesting-blur" : ""}`}>
-          <button
-            className="modal-button modal-button-secondary"
-            onClick={animatedClose}
-          >
-            Stäng
-          </button>
-          <button
-            className="modal-button modal-button-primary"
-            onClick={handleSubmit}
-            disabled={!isBalanced || loading || suggesting}
-          >
-            {loading ? "Bokför..." : "Bokför"}
-          </button>
+        <button type="button" className="add-account-button" onClick={addRow}>
+          + Lägg till T-konto
+        </button>
+
+        <div className="journal-summary">
+          <span className="summary-label-debit">Debet</span>
+          <span className="summary-label-credit">Kredit</span>
+          <strong className="summary-total-debit">{totalDebit}</strong>
+          <strong className="summary-total-credit">{totalCredit}</strong>
         </div>
+      </div>
+
+      <div className={`modal-actions${suggesting ? " suggesting-blur" : ""}`}>
+        <button
+          className="modal-button modal-button-secondary"
+          onClick={animatedClose}
+        >
+          Stäng
+        </button>
+        <button
+          className="modal-button modal-button-primary"
+          onClick={handleSubmit}
+          disabled={!isBalanced || loading || suggesting}
+        >
+          {loading ? "Bokför..." : "Bokför"}
+        </button>
+      </div>
     </ModalShell>
   );
 }

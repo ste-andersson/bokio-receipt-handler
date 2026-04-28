@@ -12,13 +12,12 @@ export interface JournalItem {
   account: string;
   debit: string;
   credit: string;
-  placeholder?: boolean;
+  autoFocus?: boolean;
 }
 
 const initialItems: JournalItem[] = [
   { account: "2890", debit: "", credit: "" },
   { account: "5460", debit: "", credit: "" },
-  { account: "", debit: "", credit: "", placeholder: true },
 ];
 
 function buildAccountPlan(): string {
@@ -95,7 +94,6 @@ export function useAccountingModal(
                   : "",
             }),
           ),
-          { account: "", debit: "", credit: "", placeholder: true },
         ]);
       } catch {
         toast.error("Kunde inte analysera kvittot.");
@@ -130,16 +128,13 @@ export function useAccountingModal(
     String(totalCredit).replace(".", ","),
   );
 
-  const activateRow = (index: number) => {
-    const updated = [...items];
-    updated[index].placeholder = false;
-    updated.push({ account: "", debit: "", credit: "", placeholder: true });
-    setItems(updated);
+  const addRow = () => {
+    setItems((prev) => [...prev, { account: "", debit: "", credit: "", autoFocus: true }]);
   };
 
   const handleRowBlur = (index: number) => {
     const item = items[index];
-    if (!item.placeholder && !item.account && !item.debit && !item.credit) {
+    if (!item.account && !item.debit && !item.credit) {
       setItems(items.filter((_, i) => i !== index));
     }
   };
@@ -218,7 +213,7 @@ export function useAccountingModal(
     loading,
     totalDebit: formattedTotalDebit,
     totalCredit: formattedTotalCredit,
-    activateRow,
+    addRow,
     handleRowBlur,
     handleSubmit,
     suggesting,

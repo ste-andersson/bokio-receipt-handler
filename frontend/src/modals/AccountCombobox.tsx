@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import accounts from "../data/accounts";
 import "./AccountCombobox.css";
@@ -6,10 +6,12 @@ import "./AccountCombobox.css";
 interface Props {
   value: string;
   onChange: (account: string) => void;
+  autoFocus?: boolean;
 }
 
-export function AccountCombobox({ value, onChange }: Props) {
-  const [open, setOpen] = useState(false);
+export function AccountCombobox({ value, onChange, autoFocus }: Props) {
+  const openedByProp = useRef(!!autoFocus);
+  const [open, setOpen] = useState(openedByProp.current);
   const [filter, setFilter] = useState("");
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -21,6 +23,12 @@ export function AccountCombobox({ value, onChange }: Props) {
     if (!q) return true;
     return num.includes(q) || name.toLowerCase().includes(q);
   });
+
+  useLayoutEffect(() => {
+    if (!openedByProp.current || !triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setDropdownStyle({ top: rect.bottom + 4, left: rect.left + rect.width / 2 });
+  }, []);
 
   const handleOpen = () => {
     if (triggerRef.current) {
@@ -84,6 +92,7 @@ export function AccountCombobox({ value, onChange }: Props) {
             placeholder="Sök konto..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
+            autoFocus={openedByProp.current}
           />
           <ul className="account-options">
             {filtered.map(([num, name]) => (
