@@ -29,6 +29,19 @@ export function useAnimatedClose(
       el.style.transition = "transform 0.7s cubic-bezier(0.32, 0.72, 0, 1)";
       el.style.transform = "translateY(110%)";
       setTimeout(() => onCloseRef.current(), 700);
+    } else if (el) {
+      const overlay = el.parentElement as HTMLElement | null;
+      if (overlay) {
+        overlay.style.animation = "none";
+        overlay.style.transition = "background 0.15s ease, backdrop-filter 0.15s ease";
+        overlay.style.background = "rgba(34, 34, 34, 0)";
+        overlay.style.backdropFilter = "blur(0px)";
+      }
+      el.style.animation = "none";
+      el.style.transition = "transform 0.15s ease, opacity 0.15s ease";
+      el.style.transform = "scale(0.95)";
+      el.style.opacity = "0";
+      setTimeout(() => onCloseRef.current(), 150);
     } else {
       onCloseRef.current();
     }
