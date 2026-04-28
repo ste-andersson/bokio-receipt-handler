@@ -32,6 +32,9 @@ public class UserService {
         user.setCompanyId(request.getCompanyId());
         user.setCustomPrompt(request.getCustomPrompt());
         user.setAiProvider(request.getAiProvider());
+        if (request.getShowCamera() != null) user.setShowCamera(request.getShowCamera());
+        if (request.getShowBokioBacklog() != null) user.setShowBokioBacklog(request.getShowBokioBacklog());
+        if (request.getShowTekontoBacklog() != null) user.setShowTekontoBacklog(request.getShowTekontoBacklog());
         repository.save(user);
     }
 

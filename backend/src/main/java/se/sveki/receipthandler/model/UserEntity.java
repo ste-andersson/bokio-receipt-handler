@@ -24,6 +24,10 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private AiProvider aiProvider = AiProvider.OPENAI;
 
+    private Boolean showCamera = true;
+    private Boolean showBokioBacklog = true;
+    private Boolean showTekontoBacklog = true;
+
     public UserEntity() {
     }
 
@@ -66,5 +70,29 @@ public class UserEntity {
 
     public void setAiProvider(AiProvider aiProvider) {
         this.aiProvider = aiProvider;
+    }
+
+    public Boolean getShowCamera() {
+        return showCamera == null || showCamera;
+    }
+
+    public void setShowCamera(Boolean showCamera) {
+        this.showCamera = showCamera;
+    }
+
+    public Boolean getShowBokioBacklog() {
+        return showBokioBacklog == null || showBokioBacklog;
+    }
+
+    public void setShowBokioBacklog(Boolean showBokioBacklog) {
+        this.showBokioBacklog = showBokioBacklog;
+    }
+
+    public Boolean getShowTekontoBacklog() {
+        return showTekontoBacklog == null || showTekontoBacklog;
+    }
+
+    public void setShowTekontoBacklog(Boolean showTekontoBacklog) {
+        this.showTekontoBacklog = showTekontoBacklog;
     }
 }

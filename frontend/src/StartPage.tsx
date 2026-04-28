@@ -1,5 +1,5 @@
 import { useUser, useAuth, SignInButton, UserButton } from "@clerk/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CameraButton from "./components/CameraButton";
 import AccountingModal from "./modals/AccountingModal";
 import SettingsModal from "./modals/SettingsModal";
@@ -22,6 +22,24 @@ function StartPage() {
   const [backlogOpen, setBacklogOpen] = useState(false);
   const [mailBacklogOpen, setMailBacklogOpen] = useState(false);
   const [hasSynced, setHasSynced] = useState(false);
+  const [showCamera, setShowCamera] = useState(true);
+  const [showBokioBacklog, setShowBokioBacklog] = useState(true);
+  const [showTekontoBacklog, setShowTekontoBacklog] = useState(true);
+
+  const loadFeatureSettings = () => {
+    authFetch(`${API_BASE_URL}/api/users/settings`)
+      .then((res) => res.json())
+      .then((data) => {
+        setShowCamera(data.showCamera ?? true);
+        setShowBokioBacklog(data.showBokioBacklog ?? true);
+        setShowTekontoBacklog(data.showTekontoBacklog ?? true);
+      });
+  };
+
+  useEffect(() => {
+    if (user) loadFeatureSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   if (isLoaded && isSignedIn && user && !hasSynced) {
     setHasSynced(true);
@@ -57,24 +75,30 @@ function StartPage() {
           <div className="logged-in-content">
             <img src={logo} alt="Tekont" className="hero-logo" />
             <div className="action-buttons">
-              <CameraButton
-                onImageCapture={(file) => {
-                  setUploadId(undefined);
-                  setImage(file);
-                }}
-              />
-              <button
-                className="btn-secondary action-btn"
-                onClick={() => setBacklogOpen(true)}
-              >
-                Bokio-backlog
-              </button>
-              <button
-                className="btn-secondary action-btn"
-                onClick={() => setMailBacklogOpen(true)}
-              >
-                Tekont-backlog
-              </button>
+              {showCamera && (
+                <CameraButton
+                  onImageCapture={(file) => {
+                    setUploadId(undefined);
+                    setImage(file);
+                  }}
+                />
+              )}
+              {showBokioBacklog && (
+                <button
+                  className="btn-secondary action-btn"
+                  onClick={() => setBacklogOpen(true)}
+                >
+                  Bokio-backlog
+                </button>
+              )}
+              {showTekontoBacklog && (
+                <button
+                  className="btn-secondary action-btn"
+                  onClick={() => setMailBacklogOpen(true)}
+                >
+                  Tekont-backlog
+                </button>
+              )}
               <button
                 className="btn-ghost action-btn"
                 onClick={() => setSettingsOpen(true)}
@@ -98,7 +122,7 @@ function StartPage() {
         />
       )}
       {settingsOpen && (
-        <SettingsModal onClose={() => setSettingsOpen(false)} />
+        <SettingsModal onClose={() => { setSettingsOpen(false); loadFeatureSettings(); }} />
       )}
       {backlogOpen && (
         <BacklogModal

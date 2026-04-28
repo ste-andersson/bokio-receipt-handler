@@ -22,6 +22,9 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   const [newCompanyAlias, setNewCompanyAlias] = useState("");
   const [verifyStatus, setVerifyStatus] = useState<VerifyStatus>("idle");
   const [companyName, setCompanyName] = useState("");
+  const [showCamera, setShowCamera] = useState(true);
+  const [showBokioBacklog, setShowBokioBacklog] = useState(true);
+  const [showTekontoBacklog, setShowTekontoBacklog] = useState(true);
 
   const verifyCompany = async (tkn: string, cid: string) => {
     if (!tkn || !cid) return;
@@ -54,6 +57,9 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
         setCompanyId(cid);
         setCustomPrompt(data.customPrompt ?? "");
         setAiProvider(data.aiProvider ?? "OPENAI");
+        setShowCamera(data.showCamera ?? true);
+        setShowBokioBacklog(data.showBokioBacklog ?? true);
+        setShowTekontoBacklog(data.showTekontoBacklog ?? true);
         const tkn = localStorage.getItem("bokioToken") ?? "";
         if (cid && tkn) verifyCompany(tkn, cid);
       });
@@ -83,7 +89,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     await authFetch(`${API_BASE_URL}/api/users/settings`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ companyId, customPrompt, aiProvider }),
+      body: JSON.stringify({ companyId, customPrompt, aiProvider, showCamera, showBokioBacklog, showTekontoBacklog }),
     });
     toast.success("Inställningar sparade");
     onClose();
@@ -204,6 +210,30 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
               rows={4}
             />
           </label>
+          <div className="modal-field modal-field-full">
+            <span className="modal-label">Visa på startsidan</span>
+            <div className="settings-toggles">
+              {(
+                [
+                  { label: "Fotografera kvitto", value: showCamera, set: setShowCamera },
+                  { label: "Bokio-backlog", value: showBokioBacklog, set: setShowBokioBacklog },
+                  { label: "Tekont-backlog", value: showTekontoBacklog, set: setShowTekontoBacklog },
+                ] as const
+              ).map(({ label, value, set }) => (
+                <label key={label} className="settings-toggle-row">
+                  <span>{label}</span>
+                  <span className="settings-toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={value}
+                      onChange={(e) => set(e.target.checked)}
+                    />
+                    <span className="settings-toggle-track" />
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
           <div className="modal-field modal-field-full">
             <span className="modal-label">Mailalias</span>
             <p className="settings-hint">
