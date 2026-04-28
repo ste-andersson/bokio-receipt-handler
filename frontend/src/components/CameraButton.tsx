@@ -1,5 +1,7 @@
 import { useRef } from "react";
 
+const isMobile = window.matchMedia("(pointer: coarse)").matches;
+
 function CameraButton({
   onImageCapture,
 }: {
@@ -19,7 +21,7 @@ function CameraButton({
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
+        {...(isMobile ? { capture: "environment" } : {})}
         style={{ display: "none" }}
         onChange={handleCapture}
       />
@@ -27,7 +29,7 @@ function CameraButton({
         className="btn-primary action-btn"
         onClick={() => inputRef.current?.click()}
       >
-        Fotografera kvitto
+        {isMobile ? "Fotografera kvitto" : "Ladda upp kvitto"}
       </button>
     </>
   );

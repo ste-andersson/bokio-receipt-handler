@@ -93,7 +93,14 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     await authFetch(`${API_BASE_URL}/api/users/settings`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ companyId, customPrompt, aiProvider, showCamera, showBokioBacklog, showTekontoBacklog }),
+      body: JSON.stringify({
+        companyId,
+        customPrompt,
+        aiProvider,
+        showCamera,
+        showBokioBacklog,
+        showTekontoBacklog,
+      }),
     });
     toast.success("Inställningar sparade");
     animatedClose();
@@ -134,161 +141,173 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
   return (
     <ModalShell onClose={animatedClose} contentRef={contentRef}>
-        <h2 className="modal-title">Inställningar</h2>
-        <p className="modal-subtitle">
-          Hantera integrationer och hur AI-assistenten arbetar.
-        </p>
-        <div className="modal-form-grid">
-          <label className="modal-field">
-            <span className="modal-label">Company ID</span>
+      <h2 className="modal-title">Inställningar</h2>
+      <p className="modal-subtitle">
+        Hantera integrationer och hur AI-assistenten arbetar.
+      </p>
+      <div className="modal-form-grid">
+        <label className="modal-field">
+          <span className="modal-label">Company ID</span>
+          <input
+            className="modal-input"
+            type="text"
+            value={companyId}
+            onChange={(e) => setCompanyId(e.target.value)}
+            onBlur={(e) => verifyCompany(token, e.target.value)}
+          />
+          {verifyStatus === "loading" && (
+            <span className="settings-verify settings-verify-loading">
+              Verifierar...
+            </span>
+          )}
+          {verifyStatus === "success" && (
+            <span className="settings-verify settings-verify-success">
+              ✓ {companyName}
+            </span>
+          )}
+          {verifyStatus === "error" && (
+            <span className="settings-verify settings-verify-error">
+              Kunde inte verifiera company ID med token
+            </span>
+          )}
+        </label>
+        <div className="modal-field">
+          <span className="modal-label">Bokio Token</span>
+          {editingToken ? (
+            <textarea
+              className="modal-input settings-token-input"
+              placeholder="Klistra in din Bokio-token här"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              onBlur={handleTokenBlur}
+              autoFocus
+            />
+          ) : (
+            <div className="settings-token-set">
+              <span>Token inlagd ✓</span>
+              <button
+                type="button"
+                className="settings-token-replace"
+                onClick={() => {
+                  setToken("");
+                  setEditingToken(true);
+                }}
+              >
+                Byt ut
+              </button>
+            </div>
+          )}
+        </div>
+        <label className="modal-field">
+          <span className="modal-label">AI-analys</span>
+          <select
+            className="modal-input modal-select"
+            value={aiProvider}
+            onChange={(e) => setAiProvider(e.target.value)}
+          >
+            <option value="OPENAI">OpenAI</option>
+            <option value="GROQ">Groq</option>
+            <option value="GROK">Grok</option>
+            <option value="OFF">Av</option>
+          </select>
+        </label>
+        <label className="modal-field modal-field-full">
+          <span className="modal-label">Egna instruktioner till AI</span>
+          <textarea
+            className="modal-input modal-textarea"
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            rows={4}
+          />
+        </label>
+        <div className="modal-field modal-field-full">
+          <span className="modal-label">Visa på startsidan</span>
+          <div className="settings-toggles">
+            {(
+              [
+                {
+                  label: "Fotografera kvitto / Ladda upp kvitto",
+                  value: showCamera,
+                  set: setShowCamera,
+                },
+                {
+                  label: "Bokio-backlog",
+                  value: showBokioBacklog,
+                  set: setShowBokioBacklog,
+                },
+                {
+                  label: "Tekont-backlog",
+                  value: showTekontoBacklog,
+                  set: setShowTekontoBacklog,
+                },
+              ] as const
+            ).map(({ label, value, set }) => (
+              <label key={label} className="settings-toggle-row">
+                <span>{label}</span>
+                <span className="settings-toggle-switch">
+                  <input
+                    type="checkbox"
+                    checked={value}
+                    onChange={(e) => set(e.target.checked)}
+                  />
+                  <span className="settings-toggle-track" />
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="modal-field modal-field-full">
+          <span className="modal-label">Mailalias</span>
+          <p className="settings-hint">
+            Skicka kvitton till ***@kvitto.tekont.se
+          </p>
+          {companyAliases.length > 0 && (
+            <ul className="settings-alias-list">
+              {companyAliases.map((companyAlias) => (
+                <li key={companyAlias} className="settings-alias-item">
+                  <span>{companyAlias}@kvitto.tekont.se</span>
+                  <button
+                    className="settings-alias-delete"
+                    onClick={() => handleDeleteCompanyAlias(companyAlias)}
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="settings-alias-add">
             <input
               className="modal-input"
               type="text"
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              onBlur={(e) => verifyCompany(token, e.target.value)}
+              placeholder="nytt-alias"
+              value={newCompanyAlias}
+              onChange={(e) => setNewCompanyAlias(e.target.value)}
             />
-            {verifyStatus === "loading" && (
-              <span className="settings-verify settings-verify-loading">
-                Verifierar...
-              </span>
-            )}
-            {verifyStatus === "success" && (
-              <span className="settings-verify settings-verify-success">
-                ✓ {companyName}
-              </span>
-            )}
-            {verifyStatus === "error" && (
-              <span className="settings-verify settings-verify-error">
-                Kunde inte verifiera company ID med token
-              </span>
-            )}
-          </label>
-          <div className="modal-field">
-            <span className="modal-label">Bokio Token</span>
-            {editingToken ? (
-              <textarea
-                className="modal-input settings-token-input"
-                placeholder="Klistra in din Bokio-token här"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                onBlur={handleTokenBlur}
-                autoFocus
-              />
-            ) : (
-              <div className="settings-token-set">
-                <span>Token inlagd ✓</span>
-                <button
-                  type="button"
-                  className="settings-token-replace"
-                  onClick={() => {
-                    setToken("");
-                    setEditingToken(true);
-                  }}
-                >
-                  Byt ut
-                </button>
-              </div>
-            )}
-          </div>
-          <label className="modal-field">
-            <span className="modal-label">AI-analys</span>
-            <select
-              className="modal-input modal-select"
-              value={aiProvider}
-              onChange={(e) => setAiProvider(e.target.value)}
+            <button
+              className="modal-button modal-button-secondary"
+              onClick={handleAddCompanyAlias}
             >
-              <option value="OPENAI">OpenAI</option>
-              <option value="GROQ">Groq</option>
-              <option value="GROK">Grok</option>
-              <option value="OFF">Av</option>
-            </select>
-          </label>
-          <label className="modal-field modal-field-full">
-            <span className="modal-label">Egna instruktioner till AI</span>
-            <textarea
-              className="modal-input modal-textarea"
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              rows={4}
-            />
-          </label>
-          <div className="modal-field modal-field-full">
-            <span className="modal-label">Visa på startsidan</span>
-            <div className="settings-toggles">
-              {(
-                [
-                  { label: "Fotografera kvitto", value: showCamera, set: setShowCamera },
-                  { label: "Bokio-backlog", value: showBokioBacklog, set: setShowBokioBacklog },
-                  { label: "Tekont-backlog", value: showTekontoBacklog, set: setShowTekontoBacklog },
-                ] as const
-              ).map(({ label, value, set }) => (
-                <label key={label} className="settings-toggle-row">
-                  <span>{label}</span>
-                  <span className="settings-toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={value}
-                      onChange={(e) => set(e.target.checked)}
-                    />
-                    <span className="settings-toggle-track" />
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="modal-field modal-field-full">
-            <span className="modal-label">Mailalias</span>
-            <p className="settings-hint">
-              Skicka kvitton till ***@kvitto.tekont.se
-            </p>
-            {companyAliases.length > 0 && (
-              <ul className="settings-alias-list">
-                {companyAliases.map((companyAlias) => (
-                  <li key={companyAlias} className="settings-alias-item">
-                    <span>{companyAlias}@kvitto.tekont.se</span>
-                    <button
-                      className="settings-alias-delete"
-                      onClick={() => handleDeleteCompanyAlias(companyAlias)}
-                    >
-                      ✕
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="settings-alias-add">
-              <input
-                className="modal-input"
-                type="text"
-                placeholder="nytt-alias"
-                value={newCompanyAlias}
-                onChange={(e) => setNewCompanyAlias(e.target.value)}
-              />
-              <button
-                className="modal-button modal-button-secondary"
-                onClick={handleAddCompanyAlias}
-              >
-                Lägg till
-              </button>
-            </div>
+              Lägg till
+            </button>
           </div>
         </div>
-        <div className="modal-actions">
-          <button
-            className="modal-button modal-button-secondary"
-            onClick={animatedClose}
-          >
-            Stäng
-          </button>
-          <button
-            className="modal-button modal-button-primary"
-            onClick={handleSave}
-            disabled={verifyStatus === "loading" || verifyStatus === "error"}
-          >
-            Spara
-          </button>
-        </div>
+      </div>
+      <div className="modal-actions">
+        <button
+          className="modal-button modal-button-secondary"
+          onClick={animatedClose}
+        >
+          Stäng
+        </button>
+        <button
+          className="modal-button modal-button-primary"
+          onClick={handleSave}
+          disabled={verifyStatus === "loading" || verifyStatus === "error"}
+        >
+          Spara
+        </button>
+      </div>
     </ModalShell>
   );
 }
