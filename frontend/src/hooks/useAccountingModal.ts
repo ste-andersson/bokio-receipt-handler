@@ -106,7 +106,7 @@ export function useAccountingModal(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aiEnabled]);
 
-  const activeItems = items.filter((item) => !item.placeholder);
+  const activeItems = items;
 
   const totalDebit = items.reduce(
     (sum, item) => sum + parseAmount(item.debit),
