@@ -1,0 +1,86 @@
+.account-combobox-trigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  font-size: 1rem;
+  color: inherit;
+}
+
+.account-combobox-trigger:hover .account-number,
+.account-combobox-trigger:hover .account-name {
+  opacity: 0.7;
+}
+
+.account-dropdown {
+  position: fixed;
+  transform: translateX(-50%);
+  width: 280px;
+  background: white;
+  border: 1px solid #d4ccbe;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 2000;
+  overflow: hidden;
+}
+
+.account-filter-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-bottom: 1px solid #d4ccbe;
+  font-size: 0.9rem;
+  background: #faf8f3;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.account-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.account-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.account-option:hover {
+  background: #f5f0e8;
+}
+
+.account-option--selected {
+  background: #ebe4d6;
+}
+
+.account-option-number {
+  font-weight: 600;
+  color: #2a2a2a;
+  flex-shrink: 0;
+  width: 2.5rem;
+}
+
+.account-option-name {
+  color: #555;
+}
+
+.account-option-empty {
+  padding: 0.75rem;
+  color: #999;
+  font-style: italic;
+  font-size: 0.9rem;
+}

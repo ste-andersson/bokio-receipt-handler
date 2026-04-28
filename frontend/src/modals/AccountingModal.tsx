@@ -1,6 +1,6 @@
 import "./AccountingModal.css";
 import ModalShell from "./ModalShell";
-import accounts from "../data/accounts";
+import { AccountCombobox } from "./AccountCombobox";
 import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import { useAccountingModal } from "../hooks/useAccountingModal";
 import { useEffect, useRef, useState } from "react";
@@ -114,22 +114,14 @@ function AccountingModal({
                     Lägg till konto eller skriv nummer
                   </span>
                 ) : (
-                  <>
-                    <input
-                      className="account-number"
-                      type="text"
-                      maxLength={4}
-                      value={item.account}
-                      onChange={(e) => {
-                        const updated = [...items];
-                        updated[index].account = e.target.value;
-                        setItems(updated);
-                      }}
-                    />
-                    <span className="account-name">
-                      {accounts[item.account] ?? "—"}
-                    </span>
-                  </>
+                  <AccountCombobox
+                    value={item.account}
+                    onChange={(acc) => {
+                      const updated = [...items];
+                      updated[index].account = acc;
+                      setItems(updated);
+                    }}
+                  />
                 )}
               </div>
               <input
