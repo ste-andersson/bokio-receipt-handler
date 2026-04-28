@@ -166,17 +166,43 @@
   cursor: not-allowed;
 }
 
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 760px) {
   .modal-overlay {
     padding: 0;
-    align-items: stretch;
+    align-items: flex-end;
   }
 
   .modal-content {
-    max-height: 100vh;
-    border-radius: 0;
+    width: 100%;
+    max-height: 90vh;
+    border-radius: 1rem 1rem 0 0;
     border-inline: none;
-    padding: 1.4rem 1rem 1.2rem;
+    border-bottom: none;
+    padding: 0 1rem 2rem;
+    animation: sheet-up 1.35s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .modal-close {
+    display: none;
+  }
+
+  .modal-content::before {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 0.25rem;
+    background: #c8bfb1;
+    border-radius: 99px;
+    margin: 1rem auto 1.25rem;
   }
 
   .modal-title {

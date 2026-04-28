@@ -1,5 +1,5 @@
-import "./Modal.css";
 import "./AccountingModal.css";
+import ModalShell from "./ModalShell";
 import accounts from "../data/accounts";
 import { formatAmount, formatAmountOnBlur } from "../utils/formatAmount";
 import { useAccountingModal } from "../hooks/useAccountingModal";
@@ -54,12 +54,7 @@ function AccountingModal({
   }, [suggesting]);
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>
-          ✕
-        </button>
-
+    <ModalShell onClose={onClose}>
         {suggesting && (
           <div className="suggesting-banner">
             <div className="suggesting-spinner" />
@@ -194,8 +189,7 @@ function AccountingModal({
             {loading ? "Bokför..." : "Bokför"}
           </button>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }
 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/react";
 import { toast } from "react-toastify";
-import "./Modal.css";
 import "./SettingsModal.css";
+import ModalShell from "./ModalShell";
 import { API_BASE_URL } from "../config/api";
 import { useAuthFetch } from "../hooks/useAuthFetch";
 
@@ -129,8 +129,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <ModalShell onClose={onClose}>
         <h2 className="modal-title">Inställningar</h2>
         <p className="modal-subtitle">
           Hantera integrationer och hur AI-assistenten arbetar.
@@ -286,8 +285,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
             Spara
           </button>
         </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }
 

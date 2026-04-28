@@ -4,8 +4,8 @@ import { useUser } from "@clerk/react";
 import { Document, Page } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import "./Modal.css";
 import "./BacklogModal.css";
+import ModalShell from "./ModalShell";
 import { API_BASE_URL } from "../config/api";
 import { useAuthFetch } from "../hooks/useAuthFetch";
 
@@ -119,11 +119,7 @@ function BacklogModal({
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <button className="modal-close" onClick={onClose}>
-          ✕
-        </button>
+    <ModalShell onClose={onClose}>
         <h2 className="modal-title">Kvittobacklog</h2>
         {loading ? (
           <p className="backlog-loading">Hämtar kvitton...</p>
@@ -142,8 +138,7 @@ function BacklogModal({
             ))}
           </div>
         )}
-      </div>
-    </div>
+    </ModalShell>
   );
 }
 
