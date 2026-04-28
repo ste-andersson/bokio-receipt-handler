@@ -42,6 +42,7 @@ export function useAccountingModal(
   const [companyId, setCompanyId] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState<boolean | null>(null);
 
   const hasAnalyzed = useRef(false);
   const imageRef = useRef(image);
@@ -49,11 +50,16 @@ export function useAccountingModal(
   useEffect(() => {
     authFetch(`${API_BASE_URL}/api/users/settings`)
       .then((res) => res.json())
-      .then((data) => setCompanyId(data.companyId ?? ""));
+      .then((data) => {
+        setCompanyId(data.companyId ?? "");
+        setAiEnabled((data.aiProvider ?? "OPENAI") !== "OFF");
+      });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   useEffect(() => {
+    if (aiEnabled === null || !aiEnabled) return;
+
     const analyze = async () => {
       if (hasAnalyzed.current) return;
       hasAnalyzed.current = true;
@@ -99,7 +105,7 @@ export function useAccountingModal(
 
     analyze();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [aiEnabled]);
 
   const activeItems = items.filter((item) => !item.placeholder);
 
