@@ -64,16 +64,21 @@ function BacklogThumbnail({
   };
 
   return (
-    <div className="backlog-thumbnail" onClick={handleClick}>
-      {buffer && item.contentType === "application/pdf" ? (
-        // slice(0) gives pdfjs a fresh copy to transfer — keeps the cached buffer intact
-        <Document file={{ data: buffer.slice(0) }}>
-          <Page pageNumber={1} width={150} />
-        </Document>
-      ) : imageUrl ? (
-        <img src={imageUrl} alt="Kvitto" />
-      ) : (
-        <div className="backlog-thumbnail-placeholder">Laddar...</div>
+    <div className="backlog-item">
+      <div className="backlog-thumbnail" onClick={handleClick}>
+        {buffer && item.contentType === "application/pdf" ? (
+          // slice(0) gives pdfjs a fresh copy to transfer — keeps the cached buffer intact
+          <Document file={{ data: buffer.slice(0) }}>
+            <Page pageNumber={1} width={150} />
+          </Document>
+        ) : imageUrl ? (
+          <img src={imageUrl} alt="Kvitto" />
+        ) : (
+          <div className="backlog-thumbnail-placeholder">Laddar...</div>
+        )}
+      </div>
+      {item.description && (
+        <span className="backlog-item-date">{item.description}</span>
       )}
     </div>
   );

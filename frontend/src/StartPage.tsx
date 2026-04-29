@@ -228,7 +228,7 @@ function StartPage() {
                       className="btn-secondary action-btn"
                       onClick={() => setMailBacklogOpen(true)}
                     >
-                      Tekont-backlog
+                      Kvitto-inbox
                       {tekontBacklogItems != null
                         ? ` (${tekontBacklogItems.length})`
                         : ""}

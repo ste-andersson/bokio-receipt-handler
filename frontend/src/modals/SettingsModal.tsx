@@ -236,7 +236,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
                   set: setShowBokioBacklog,
                 },
                 {
-                  label: "Tekont-backlog",
+                  label: "Kvitto-inbox",
                   value: showTekontoBacklog,
                   set: setShowTekontoBacklog,
                 },
@@ -257,7 +257,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="modal-field modal-field-full">
-          <span className="modal-label">Mailalias</span>
+          <span className="modal-label">Kvitto-inbox</span>
           <p className="settings-hint">
             Skicka kvitton till ***@kvitto.tekont.se
           </p>

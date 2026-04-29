@@ -60,7 +60,8 @@
 .modal-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  column-gap: 1rem;
+  row-gap: 1.75rem;
 }
 
 .modal-field {

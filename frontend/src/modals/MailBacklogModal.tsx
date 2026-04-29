@@ -75,6 +75,12 @@ function MailReceiptThumbnail({
     deleteMutation.mutate();
   };
 
+  const formattedDate = new Date(item.receivedAt).toLocaleDateString("sv-SE", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
   return (
     <div className="backlog-item">
       <div className="backlog-thumbnail" onClick={handleClick}>
@@ -89,6 +95,7 @@ function MailReceiptThumbnail({
           <div className="backlog-thumbnail-placeholder">Laddar...</div>
         )}
       </div>
+      <span className="backlog-item-date">{formattedDate}</span>
       <button
         className="backlog-item-delete"
         onClick={handleDelete}
